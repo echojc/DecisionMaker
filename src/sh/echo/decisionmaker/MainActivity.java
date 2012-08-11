@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
@@ -69,6 +71,13 @@ public class MainActivity extends Activity {
 		
 		// select last selected spinner option (0 by default)
 		programSpinner.setSelection(currentSpinnerPosition);
+	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+	    MenuInflater inflater = getMenuInflater();
+	    inflater.inflate(R.menu.activity_main, menu);
+	    return true;
 	}
 	
 	@Override
