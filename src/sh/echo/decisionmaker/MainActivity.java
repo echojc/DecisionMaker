@@ -21,6 +21,7 @@ public class MainActivity extends Activity {
 	// unsaved variables
 	private static Handler handler;
 	private OnItemSelectedListener spinnerHandler;
+	private Thread warpTextThread;
 	
 	// saved state variables
 	private int currentSpinnerPosition = 0;
@@ -109,8 +110,12 @@ public class MainActivity extends Activity {
 		// set what the current option is
 		currentOption = message;
 		
-		// run this not on the main UI thread
-		new Thread(new Runnable() {
+		// ensure only one animation runs at a time
+		if (warpTextThread != null && warpTextThread.isAlive())
+			warpTextThread.interrupt();
+
+		// run apart from the main UI thread
+		warpTextThread = new Thread(new Runnable() {
 			public void run() {
 				int startLength = ProgramManager.getLongestOptionLength(cachedProgramName);
 				for (float f = startLength; f >= 0; f -= 0.3f) {
@@ -138,10 +143,18 @@ public class MainActivity extends Activity {
 					// run this at roughly 50fps
 					try {
 						Thread.sleep(20);
-					} catch (InterruptedException e) {}
+					} catch (InterruptedException e) {
+						// we got interrupted, so stop immediately
+						return;
+					}
+					
+					// check for interrupt
+					if (Thread.currentThread().isInterrupted())
+						return;
 				}
 			}
-		}).start();
+		});
+		warpTextThread.start();
 	}
 	
 	/**
