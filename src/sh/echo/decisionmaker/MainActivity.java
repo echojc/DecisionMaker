@@ -135,8 +135,8 @@ public class MainActivity extends Activity {
 					}
 					setTextAsync(new String(randomChars));
 					
-					// set alpha (with easing)
-					int alpha = (int)(Math.pow(f / startLength, 2) * 255);
+					// set alpha
+					int alpha = (int)(f /startLength * 255);
 					int color = getResources().getColor(finalColorId);
 					setBackgroundColorAsync((color & 0x00ffffff) | (alpha << 24));
 					
