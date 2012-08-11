@@ -1,18 +1,9 @@
 package sh.echo.decisionmaker;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.HashMap;
-import java.util.Map;
-
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
-import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
@@ -27,12 +18,12 @@ public class MainActivity extends Activity {
 	
 	// unsaved variables
 	private static Handler handler;
-	private Map<String, String[]> programs = new HashMap<String, String[]>();
+	private OnItemSelectedListener spinnerHandler;
 	
 	// saved state variables
-	private int longestChoiceLength;
-	private String currentOption;
-	private boolean skipWarpText;
+	private int currentSpinnerPosition = 0;
+	private String currentOption = null;
+	private boolean skipWarpText = false;
 	
 	// views
 	private Spinner programSpinner;
@@ -45,88 +36,45 @@ public class MainActivity extends Activity {
 		
 		// set views
 		programSpinner = (Spinner)findViewById(R.id.current_program);
-		outputDisplay = (TextView)findViewById(R.id.do_randomize);
+		outputDisplay = (TextView)findViewById(R.id.option_display);
+		
+		// restore state variables
+		if (savedInstanceState != null) {
+			Log.i("OnCreate", "restoring state");
+			currentSpinnerPosition = savedInstanceState.getInt("currentSpinnerPosition");
+			currentOption = savedInstanceState.getString("currentOption");
+			outputDisplay.setText(currentOption);
+			skipWarpText = true;
+		}
 		
 		// create a handler for tasks
 		handler = new Handler();
 
 		// load existing programs
-		String[] files = fileList();
-		for (String fileName : files) {
-			FileInputStream fis = null;
-			try {
-				fis = openFileInput(fileName);
-				BufferedReader br = new BufferedReader(new InputStreamReader(fis));
-				String options = br.readLine();
-				programs.put(fileName, options.split(","));
-			} catch (FileNotFoundException e) {
-				// we can ignore disappearing files
-				continue;
-			} catch (IOException e) {
-				Log.e("FileLoad", "IOException: " + e.getMessage());
-			} finally {
-				try {
-					if (fis != null)
-						fis.close();
-				} catch (IOException e) {
-				}
-			}
-		}
+		ProgramManager.loadPrograms(this);
 
 		// TEST: add a default option
-		programs.put("Fast food", new String[] { "McDonald's", "Burger King", "KFC", "Carl's Jr." });
+		ProgramManager.addOptions("Fast food", "McDonald's", "Burger King", "KFC", "Carl's Jr.");
 		
 		// add in option to create a new program
-		programs.put("Create new...", new String[0]);
+		ProgramManager.addOptions("Create new...");
 		
 		// put programs into spinner
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, programs.keySet().toArray(new String[programs.size()]));
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, ProgramManager.getProgramNames());
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		programSpinner.setAdapter(adapter);
 		
 		// create listener for item select on spinner
-		programSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
-			
-			public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-				if (pos + 1 == parent.getAdapter().getCount()) {
-					// TODO: create new activity
-					Log.i("OnItemSelectedListener", "creating new activity");
-				}
-				
-				String name = (String)parent.getItemAtPosition(pos);
-				Log.i("OnItemSelectedListener", "selected item " + name);
-				
-				// set length of longest option within program
-				for (String choice : programs.get(name)) {
-					if (choice.length() > longestChoiceLength)
-						longestChoiceLength = choice.length();
-				}
-				
-				// reset text
-				if (!skipWarpText)
-					warpText(getResources().getString(R.string.do_randomize), R.color.nice_shade_of_light_green);
-				skipWarpText = false;
-			}
-
-			public void onNothingSelected(AdapterView<?> parent) {
-				// do nothing
-				Log.i("OnItemSelectedListener", "nothing selected");
-			}
-		});
+		programSpinner.setOnItemSelectedListener(getOnItemSelectedListener());
+		
+		// select last selected spinner option (0 by default)
+		programSpinner.setSelection(currentSpinnerPosition);
 	}
 	
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
-		outState.putInt("longestChoiceLength", longestChoiceLength);
+		outState.putInt("currentSpinnerPosition", currentSpinnerPosition);
 		outState.putString("currentOption", currentOption);
-	}
-	
-	@Override
-	public void onRestoreInstanceState(Bundle savedInstanceState) {
-		longestChoiceLength = savedInstanceState.getInt("longestChoiceLength");
-		currentOption = savedInstanceState.getString("currentOption");
-		outputDisplay.setText(currentOption);
-		skipWarpText = true;
 	}
 	
 	/**
@@ -141,20 +89,21 @@ public class MainActivity extends Activity {
 	/**
 	 * Animates the text into the specified string.
 	 * Thread-safe.
-	 * @param s
+	 * @param message
 	 * @param colorId The colour for the background.
 	 */
-	public void warpText(String s, int colorId) {
-		final int startLength = longestChoiceLength;
-		final String targetString = s;
+	public void warpText(String message, int colorId) {
+		final String cachedProgramName = getCurrentProgramName();
+		final String targetString = message;
 		final int finalColorId = colorId;
 
 		// set what the current option is
-		currentOption = s;
+		currentOption = message;
 		
 		// run this not on the main UI thread
 		new Thread(new Runnable() {
 			public void run() {
+				int startLength = ProgramManager.getLongestOptionLength(cachedProgramName);
 				for (float f = startLength; f >= 0; f -= 0.3f) {
 					// stretch out animation even more
 					int i = (int)f;
@@ -220,13 +169,58 @@ public class MainActivity extends Activity {
 	 * OnClick callback for making a choice. Selects a random option and displays it.
 	 * @param view
 	 */
-	public void doRandomizeOnClick(View view) {
-		// get options for current program
-		String currentProgram = (String)programSpinner.getSelectedItem();
-		String[] options = programs.get(currentProgram);
+	public void optionDisplay_OnClick(View view) {
+		// cache program name
+		String currentProgramName = getCurrentProgramName();
 		
-		// select a random one
-		int random = (int)(Math.random() * options.length);
-		warpText(options[random]);
+		// get options for current program
+		String[] options = ProgramManager.getOptions(currentProgramName);
+		if (options != null && options.length > 0) {
+			// select a random one
+			int random = (int)(Math.random() * options.length);
+			warpText(options[random]);	
+		} else {
+			Log.w("OnClick", "invalid program " + currentProgramName);
+		}
+	}
+	
+	/**
+	 * Gets the callback handler for the main spinner.
+	 * @return
+	 */
+	private OnItemSelectedListener getOnItemSelectedListener() {
+		if (spinnerHandler == null) {
+			spinnerHandler = new OnItemSelectedListener() {
+				
+				public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+					if (pos + 1 == parent.getAdapter().getCount()) {
+						// TODO: create new activity
+						Log.i("OnItemSelectedListener", "creating new activity");
+					}
+					
+					currentSpinnerPosition = pos;
+					Log.i("OnItemSelectedListener", "selected item " + getCurrentProgramName());
+					
+					// reset text
+					if (!skipWarpText)
+						warpText(getResources().getString(R.string.option_display_default), R.color.nice_shade_of_light_green);
+					skipWarpText = false;
+				}
+
+				public void onNothingSelected(AdapterView<?> parent) {
+					// do nothing
+					Log.i("OnItemSelectedListener", "nothing selected");
+				}
+			};
+		}
+		return spinnerHandler;
+	}
+	
+	/**
+	 * Gets the program name of the currently selected item.
+	 * @return A new String object containing the name.
+	 */
+	private String getCurrentProgramName() {
+		return new String((String)programSpinner.getItemAtPosition(currentSpinnerPosition));
 	}
 }
