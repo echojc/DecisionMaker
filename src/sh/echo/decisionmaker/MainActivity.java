@@ -127,7 +127,6 @@ public class MainActivity extends Activity {
 		currentOption = savedInstanceState.getString("currentOption");
 		outputDisplay.setText(currentOption);
 		skipWarpText = true;
-		
 	}
 	
 	/**
@@ -154,7 +153,7 @@ public class MainActivity extends Activity {
 		currentOption = s;
 		
 		// run this not on the main UI thread
-		Thread t = new Thread(new Runnable() {
+		new Thread(new Runnable() {
 			public void run() {
 				for (float f = startLength; f >= 0; f -= 0.3f) {
 					// stretch out animation even more
@@ -184,8 +183,7 @@ public class MainActivity extends Activity {
 					} catch (InterruptedException e) {}
 				}
 			}
-		});
-		t.start();
+		}).start();
 	}
 	
 	/**
