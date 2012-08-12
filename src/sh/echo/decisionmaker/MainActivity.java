@@ -1,5 +1,8 @@
 package sh.echo.decisionmaker;
 
+import sh.echo.helpers.ShakeGestureManager;
+import sh.echo.helpers.ShakeGestureManager.ShakeGestureListener;
+import sh.echo.helpers.UserActivityManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -20,6 +23,7 @@ public class MainActivity extends SherlockActivity {
 	// unsaved variables
 	private static Handler handler;
 	private OnItemSelectedListener spinnerHandler;
+	private ShakeGestureListener accelHandler;
 	private Thread warpTextThread;
 	
 	// saved state variables
@@ -46,6 +50,7 @@ public class MainActivity extends SherlockActivity {
 			currentSpinnerPosition = savedInstanceState.getInt("currentSpinnerPosition");
 			currentOption = savedInstanceState.getString("currentOption");
 			outputDisplay.setText(currentOption);
+			outputDisplay.setBackgroundColor(0x00ffffff);
 			skipWarpText = true;
 		}
 		
@@ -71,12 +76,32 @@ public class MainActivity extends SherlockActivity {
 		
 		// select last selected spinner option (0 by default)
 		programSpinner.setSelection(currentSpinnerPosition);
+		
+		// initialise shake handling
+		ShakeGestureManager.initialize(this);
+		ShakeGestureManager.enable();
+		ShakeGestureManager.addShakeGestureListener(getAccelerometerListener());
+		
+		// initialise user activity manager for manually delaying screen from dimming
+		UserActivityManager.initialize(this, handler);
 	}
 	
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		outState.putInt("currentSpinnerPosition", currentSpinnerPosition);
 		outState.putString("currentOption", currentOption);
+	}
+	
+	@Override
+	public void onResume() {
+		super.onResume();
+		ShakeGestureManager.enable();
+	}
+	
+	@Override
+	public void onStop() {
+		ShakeGestureManager.disable();
+		super.onStop();
 	}
 	
 	/**
@@ -180,10 +205,9 @@ public class MainActivity extends SherlockActivity {
 	}
 	
 	/**
-	 * OnClick callback for making a choice. Selects a random option and displays it.
-	 * @param view
+	 * Displays a random option from the current program.
 	 */
-	public void optionDisplay_OnClick(View view) {
+	public void randomize() {
 		// cache program name
 		String currentProgramName = getCurrentProgramName();
 		
@@ -192,9 +216,9 @@ public class MainActivity extends SherlockActivity {
 		if (options != null && options.length > 0) {
 			// select a random one
 			int random = (int)(Math.random() * options.length);
-			warpText(options[random]);	
+			warpText(options[random]);
 		} else {
-			Log.w("OnClick", "invalid program " + currentProgramName);
+			Log.w("randomize()", "invalid program " + currentProgramName);
 		}
 	}
 	
@@ -228,6 +252,27 @@ public class MainActivity extends SherlockActivity {
 			};
 		}
 		return spinnerHandler;
+	}
+	
+	/**
+	 * Gets the callback handler for shake gestures.
+	 * @return
+	 */
+	private ShakeGestureListener getAccelerometerListener() {
+		if (accelHandler == null) {
+			accelHandler = new ShakeGestureListener() {
+
+				@Override
+				public void onShake() {
+					// display a new option
+					randomize();
+					
+					// keep screen on for a while
+					UserActivityManager.poke();
+				}
+			};
+		}
+		return accelHandler;
 	}
 	
 	/**

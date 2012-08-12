@@ -5,7 +5,7 @@
     <string name="select_program">Select your choices:</string>
     <string name="default_program">None</string>
     <string name="new_program">New</string>
-    <string name="option_display_default">Tap to decide!</string>
+    <string name="option_display_default">Shake!</string>
     
     <string name="menu_reload">Reload</string>
     <string name="menu_edit">Edit</string>

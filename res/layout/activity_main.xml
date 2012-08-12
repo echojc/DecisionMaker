@@ -27,9 +27,7 @@
 	        android:layout_height="wrap_content"
 	        android:layout_centerInParent="true"
 	        android:background="@color/nice_shade_of_light_blue"
-	        android:clickable="true"
 	        android:gravity="center"
-	        android:onClick="optionDisplay_OnClick"
 	        android:padding="20dp"
 	        android:text="@string/option_display_default"
 	        android:textSize="32dp" />
