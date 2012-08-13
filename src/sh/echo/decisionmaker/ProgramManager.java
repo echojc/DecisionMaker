@@ -137,6 +137,14 @@ public class ProgramManager {
 	}
 	
 	/**
+	 * Gets the number of programs available.
+	 * @return
+	 */
+	public static int getProgramCount() {
+		return programs.size();
+	}
+	
+	/**
 	 * Gets the length of the longest option in the given program.
 	 * @param programName
 	 * @return

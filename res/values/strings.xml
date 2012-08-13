@@ -7,6 +7,15 @@
     <string name="new_program">New</string>
     <string name="option_display_default">Shake!</string>
     
+    <string name="no_options_message">No options to display!</string>
+    
+    <string name="welcome_message">Welcome! Simply shake to get started!</string>
+    <string name="default_program_name">Yes or No</string>
+    <string-array name="default_program_options">
+        <item>Yes</item>
+        <item>No</item>
+    </string-array>
+    
     <string name="menu_new">New</string>
     <string name="menu_edit">Edit</string>
     <string name="menu_delete">Delete</string>

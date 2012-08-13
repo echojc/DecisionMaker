@@ -61,9 +61,11 @@ public class MainActivity extends SherlockActivity {
 		// load existing programs
 		ProgramManager.loadPrograms(this);
 
-		// TEST: add a default option
-		ProgramManager.addProgram("Fast food", "McDonald's", "Wendy's", "KFC", "Carl's Jr.");
-		ProgramManager.addProgram("Empty");
+		// add a default option if there are none
+		if (ProgramManager.getProgramCount() == 0) {
+			ProgramManager.addProgram(getResources().getString(R.string.default_program_name), getResources().getStringArray(R.array.default_program_options));
+			Toast.makeText(this, getResources().getString(R.string.welcome_message), Toast.LENGTH_LONG).show();
+		}
 		
 		// put programs into spinner
 		updateSpinnerWithPrograms();
@@ -249,7 +251,7 @@ public class MainActivity extends SherlockActivity {
 		} else {
 			// display toast
 			if (randomizeToast == null)
-				randomizeToast = Toast.makeText(this, "No options to display!", Toast.LENGTH_SHORT);
+				randomizeToast = Toast.makeText(this, getResources().getString(R.string.no_options_message), Toast.LENGTH_SHORT);
 			randomizeToast.show();
 			
 			Log.w("randomize()", "no options in " + currentProgramName);
