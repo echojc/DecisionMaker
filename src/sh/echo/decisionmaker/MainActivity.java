@@ -4,7 +4,6 @@ import sh.echo.helpers.ShakeGestureManager;
 import sh.echo.helpers.ShakeGestureManager.ShakeGestureListener;
 import sh.echo.helpers.UserActivityManager;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -23,7 +22,6 @@ public class MainActivity extends SherlockActivity {
 	private final static char[] CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVXYZ0123456789!@#$%^&*()_+=[]\\{}|;':\",./<>?`~".toCharArray();
 	
 	// unsaved variables
-	private static Handler handler;
 	private OnItemSelectedListener spinnerHandler;
 	private ShakeGestureListener accelHandler;
 	private Thread warpTextThread;
@@ -55,15 +53,12 @@ public class MainActivity extends SherlockActivity {
 			outputDisplay.setBackgroundColor(0x00ffffff);
 			skipWarpText = true;
 		}
-		
-		// create a handler for tasks
-		handler = new Handler();
 
 		// load existing programs
 		ProgramManager.loadPrograms(this);
 
 		// TEST: add a default option
-		//ProgramManager.addOptions("Fast food", "McDonald's", "Burger King", "KFC", "Carl's Jr.");
+		ProgramManager.addOptions("Fast food", "McDonald's", "Burger King", "KFC", "Carl's Jr.");
 		
 		// BAD UI - USE OPTION MENU INSTEAD
 		// add in option to create a new program
@@ -86,7 +81,7 @@ public class MainActivity extends SherlockActivity {
 		ShakeGestureManager.addShakeGestureListener(getAccelerometerListener());
 		
 		// initialise user activity manager for manually delaying screen from dimming
-		UserActivityManager.initialize(this, handler);
+		UserActivityManager.initialize(this);
 	}
 	
 	@Override
@@ -192,7 +187,7 @@ public class MainActivity extends SherlockActivity {
 	public void setTextAsync(String message) {
 		final String finalMsg = message;
 		
-		handler.post(new Runnable() {
+		runOnUiThread(new Runnable() {
 			public void run() {
 				outputDisplay.setText(finalMsg);
 			}
@@ -207,7 +202,7 @@ public class MainActivity extends SherlockActivity {
 	public void setBackgroundColorAsync(int color) {
 		final int finalColor = color;
 		
-		handler.post(new Runnable() {
+		runOnUiThread(new Runnable() {
 			public void run() {
 				outputDisplay.setBackgroundColor(finalColor);
 			}
