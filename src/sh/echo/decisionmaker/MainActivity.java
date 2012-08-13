@@ -139,7 +139,11 @@ public class MainActivity extends SherlockActivity {
 		// run apart from the main UI thread
 		warpTextThread = new Thread(new Runnable() {
 			public void run() {
+				// initialise local cached variables
 				int startLength = ProgramManager.getLongestOptionLength(cachedProgramName);
+				int maskedColor = getResources().getColor(finalColorId) & 0x00ffffff;
+				
+				// animate text
 				for (float f = startLength; f >= 0; f -= 0.3f) {
 					// stretch out animation even more
 					int i = (int)f;
@@ -159,8 +163,7 @@ public class MainActivity extends SherlockActivity {
 					
 					// set alpha
 					int alpha = (int)(f /startLength * 255);
-					int color = getResources().getColor(finalColorId);
-					setBackgroundColorAsync((color & 0x00ffffff) | (alpha << 24));
+					setBackgroundColorAsync(maskedColor | (alpha << 24));
 					
 					// run this at roughly 50fps
 					try {
@@ -174,6 +177,10 @@ public class MainActivity extends SherlockActivity {
 					if (Thread.currentThread().isInterrupted())
 						return;
 				}
+				
+				// set to final step to prevent half-finished animations
+				setTextAsync(targetString);
+				setBackgroundColorAsync(maskedColor);
 			}
 		});
 		warpTextThread.start();
