@@ -11,6 +11,7 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.Menu;
@@ -25,6 +26,7 @@ public class MainActivity extends SherlockActivity {
 	private OnItemSelectedListener spinnerHandler;
 	private ShakeGestureListener accelHandler;
 	private Thread warpTextThread;
+	private Toast randomizeToast;
 	
 	// saved state variables
 	private int currentSpinnerPosition = 0;
@@ -58,7 +60,8 @@ public class MainActivity extends SherlockActivity {
 		ProgramManager.loadPrograms(this);
 
 		// TEST: add a default option
-		ProgramManager.addOptions("Fast food", "McDonald's", "Burger King", "KFC", "Carl's Jr.");
+		ProgramManager.addOptions("Fast food", "McDonald's", "Wendy's", "KFC", "Carl's Jr.");
+		ProgramManager.addOptions("Empty");
 		
 		// BAD UI - USE OPTION MENU INSTEAD
 		// add in option to create a new program
@@ -234,7 +237,12 @@ public class MainActivity extends SherlockActivity {
 			int random = (int)(Math.random() * options.length);
 			warpText(options[random]);
 		} else {
-			Log.w("randomize()", "invalid program " + currentProgramName);
+			// display toast
+			if (randomizeToast == null)
+				randomizeToast = Toast.makeText(this, "No options to display!", Toast.LENGTH_SHORT);
+			randomizeToast.show();
+			
+			Log.w("randomize()", "no options in " + currentProgramName);
 		}
 	}
 	
