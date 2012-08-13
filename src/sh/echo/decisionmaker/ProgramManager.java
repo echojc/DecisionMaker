@@ -12,6 +12,9 @@ import android.content.Context;
 import android.util.Log;
 
 public class ProgramManager {
+	
+	private static final int WORD_LENGTH_MIN = 10;
+	private static final int WORD_LENGTH_DELTA = 4;
 
 	private static Map<String, String[]> programs = new HashMap<String, String[]>();
 	
@@ -101,7 +104,7 @@ public class ProgramManager {
 	public static int getLongestOptionLength(String programName) {
 		// default value
 		if (!programs.containsKey(programName)) {
-			return 0;
+			return WORD_LENGTH_MIN;
 		}
 		
 		// iterate over all options and find the longest length
@@ -111,6 +114,6 @@ public class ProgramManager {
 			if (s.length() > maxLength)
 				maxLength = s.length();
 		}
-		return maxLength;
+		return Math.max(WORD_LENGTH_MIN, maxLength + WORD_LENGTH_DELTA);
 	}
 }
