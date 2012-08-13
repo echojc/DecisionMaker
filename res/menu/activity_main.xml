@@ -4,7 +4,7 @@
         android:title="@string/menu_new"
         android:icon="@drawable/ic_menu_add"
         android:orderInCategory="1"
-        android:showAsAction="never" />
+        android:showAsAction="ifRoom|withText" />
     
     <item android:id="@+id/menu_edit"
         android:title="@string/menu_edit"
