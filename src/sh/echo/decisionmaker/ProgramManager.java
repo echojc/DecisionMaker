@@ -1,49 +1,74 @@
 package sh.echo.decisionmaker;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.util.Log;
 
 public class ProgramManager {
 	
 	private static final int WORD_LENGTH_MIN = 10;
 	private static final int WORD_LENGTH_DELTA = 4;
+	
+	private static final String PROGRAM_PREFS_NAME = "sh.echo.decisionmaker.programs";
 
 	private static Map<String, String[]> programs = new HashMap<String, String[]>();
 	
 	/**
-	 * Loads all files associated with the specified context.
-	 * @param context
+	 * Loads all saved programs from shared preferences.
+	 * @param context Any context in the application.
 	 */
+	@SuppressWarnings("unchecked")
 	public static void loadPrograms(Context context) {
-		String[] files = context.fileList();
-		for (String fileName : files) {
-			FileInputStream fis = null;
+		// get shared preferences
+		SharedPreferences prefs = context.getSharedPreferences(PROGRAM_PREFS_NAME, Context.MODE_PRIVATE);
+		
+		// grab all key-value pairs
+		Map<String, ?> data = prefs.getAll();
+		for (String programName : data.keySet()) {
+			
+			// try to cast value to Set
+			Set<String> options;
 			try {
-				fis = context.openFileInput(fileName);
-				BufferedReader br = new BufferedReader(new InputStreamReader(fis));
-				String options = br.readLine();
-				programs.put(fileName, options.split(","));
-			} catch (FileNotFoundException e) {
-				// we can ignore disappearing files
+				options = (Set<String>)data.get(programName);
+			} catch (ClassCastException e) {
+				Log.w("ProgramManager", "key with prefix but illegal value");
 				continue;
-			} catch (IOException e) {
-				Log.e("FileLoad", "IOException: " + e.getMessage());
-			} finally {
-				try {
-					if (fis != null)
-						fis.close();
-				} catch (IOException e) {
-				}
 			}
+			
+			// add to hash
+			programs.put(programName, options.toArray(new String[options.size()]));
 		}
+	}
+	
+	/**
+	 * Saves all current programs into shared preferences.
+	 * @param context Any context in the application.
+	 */
+	public static void savePrograms(Context context) {
+		// get shared preferences editor
+		SharedPreferences prefs = context.getSharedPreferences(PROGRAM_PREFS_NAME, Context.MODE_PRIVATE);
+		Editor editor = prefs.edit();
+		
+		// empty preferences and write everything back into it
+		for (String programName : programs.keySet()) {
+			
+			// put options into a set
+			Set<String> options = new HashSet<String>();
+			Collections.addAll(options, programs.get(programName));
+			
+			// write to prefs
+			editor.putStringSet(programName, options);
+		}
+		
+		// commit
+		editor.commit();
 	}
 	
 	/**
@@ -67,12 +92,12 @@ public class ProgramManager {
 	}
 	
 	/**
-	 * Adds the specified options to the program name if it exists already,
-	 * or create a new program with these options.
+	 * Creates a program with the specified options or, if it exists already, 
+	 * append the options to the program.
 	 * @param programName
 	 * @param options Options to be associated with this program.
 	 */
-	public static void addOptions(String programName, String... options) {
+	public static void addProgram(String programName, String... options) {
 		// check if something exists already
 		String[] existingOptions = getOptions(programName);
 		if (existingOptions == null) {
@@ -86,6 +111,21 @@ public class ProgramManager {
 			// overwrite in map
 			programs.put(programName, combinedOptions);
 		}
+	}
+	
+	/**
+	 * Removes a program from the application.
+	 * @param programName
+	 */
+	public static void removeProgram(String programName) {
+		// check if this program exists
+		if (!programs.containsKey(programName)) {
+			Log.w("ProgramManager", "tried to remove non-existent program");
+			return;
+		}
+		
+		// remove it
+		programs.remove(programName);
 	}
 	
 	/**

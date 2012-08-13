@@ -62,8 +62,8 @@ public class MainActivity extends SherlockActivity {
 		ProgramManager.loadPrograms(this);
 
 		// TEST: add a default option
-		ProgramManager.addOptions("Fast food", "McDonald's", "Wendy's", "KFC", "Carl's Jr.");
-		ProgramManager.addOptions("Empty");
+		ProgramManager.addProgram("Fast food", "McDonald's", "Wendy's", "KFC", "Carl's Jr.");
+		ProgramManager.addProgram("Empty");
 		
 		// put programs into spinner
 		updateSpinnerWithPrograms();
