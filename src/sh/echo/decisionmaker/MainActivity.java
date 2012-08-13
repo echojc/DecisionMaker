@@ -63,7 +63,7 @@ public class MainActivity extends SherlockActivity {
 		ProgramManager.loadPrograms(this);
 
 		// TEST: add a default option
-		ProgramManager.addOptions("Fast food", "McDonald's", "Burger King", "KFC", "Carl's Jr.");
+		//ProgramManager.addOptions("Fast food", "McDonald's", "Burger King", "KFC", "Carl's Jr.");
 		
 		// BAD UI - USE OPTION MENU INSTEAD
 		// add in option to create a new program
@@ -220,6 +220,10 @@ public class MainActivity extends SherlockActivity {
 	public void randomize() {
 		// cache program name
 		String currentProgramName = getCurrentProgramName();
+		if (currentProgramName == null) {
+			Log.w("randomize()", "could not get program name");
+			return;
+		}
 		
 		// get options for current program
 		String[] options = ProgramManager.getOptions(currentProgramName);
@@ -287,9 +291,12 @@ public class MainActivity extends SherlockActivity {
 	
 	/**
 	 * Gets the program name of the currently selected item.
-	 * @return A new String object containing the name.
+	 * @return A new String object containing the name, or null on error.
 	 */
 	private String getCurrentProgramName() {
-		return new String((String)programSpinner.getItemAtPosition(currentSpinnerPosition));
+		if (currentSpinnerPosition < programSpinner.getAdapter().getCount())
+			return new String((String)programSpinner.getItemAtPosition(currentSpinnerPosition));
+		else
+			return null;
 	}
 }
