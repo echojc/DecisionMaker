@@ -14,6 +14,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
 
 public class MainActivity extends SherlockActivity {
 
@@ -63,8 +65,9 @@ public class MainActivity extends SherlockActivity {
 		// TEST: add a default option
 		ProgramManager.addOptions("Fast food", "McDonald's", "Burger King", "KFC", "Carl's Jr.");
 		
+		// BAD UI - USE OPTION MENU INSTEAD
 		// add in option to create a new program
-		ProgramManager.addOptions("Create new...");
+		//ProgramManager.addOptions("Create new...");
 		
 		// put programs into spinner
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, ProgramManager.getProgramNames());
@@ -84,6 +87,13 @@ public class MainActivity extends SherlockActivity {
 		
 		// initialise user activity manager for manually delaying screen from dimming
 		UserActivityManager.initialize(this, handler);
+	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+	    MenuInflater inflater = getSupportMenuInflater();
+	    inflater.inflate(R.menu.activity_main, menu);
+	    return true;
 	}
 	
 	@Override
