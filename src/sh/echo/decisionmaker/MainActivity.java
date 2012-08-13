@@ -76,8 +76,6 @@ public class MainActivity extends SherlockActivity {
 		
 		// initialise shake handling
 		ShakeGestureManager.initialize(this);
-		ShakeGestureManager.enable();
-		ShakeGestureManager.addShakeGestureListener(getShakeGestureListener());
 		
 		// initialise user activity manager for manually delaying screen from dimming
 		UserActivityManager.initialize(this);
@@ -100,11 +98,13 @@ public class MainActivity extends SherlockActivity {
 	public void onResume() {
 		super.onResume();
 		ShakeGestureManager.enable();
+		ShakeGestureManager.addShakeGestureListener(getShakeGestureListener());
 	}
 	
 	@Override
-	public void onStop() {
+	public void onPause() {
 		ShakeGestureManager.disable();
+		ShakeGestureManager.removeShakeGestureListener(getShakeGestureListener());
 		super.onStop();
 	}
 	
