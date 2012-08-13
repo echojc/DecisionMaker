@@ -1,5 +1,7 @@
 package sh.echo.decisionmaker;
 
+import java.util.Arrays;
+
 import sh.echo.helpers.ShakeGestureManager;
 import sh.echo.helpers.ShakeGestureManager.ShakeGestureListener;
 import sh.echo.helpers.UserActivityManager;
@@ -63,14 +65,8 @@ public class MainActivity extends SherlockActivity {
 		ProgramManager.addOptions("Fast food", "McDonald's", "Wendy's", "KFC", "Carl's Jr.");
 		ProgramManager.addOptions("Empty");
 		
-		// BAD UI - USE OPTION MENU INSTEAD
-		// add in option to create a new program
-		//ProgramManager.addOptions("Create new...");
-		
 		// put programs into spinner
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, ProgramManager.getProgramNames());
-		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		programSpinner.setAdapter(adapter);
+		updateSpinnerWithPrograms();
 		
 		// create listener for item select on spinner
 		programSpinner.setOnItemSelectedListener(getOnItemSelectedListener());
@@ -110,6 +106,20 @@ public class MainActivity extends SherlockActivity {
 	public void onStop() {
 		ShakeGestureManager.disable();
 		super.onStop();
+	}
+	
+	/**
+	 * Updates the program spinner with all currently existing programs.
+	 */
+	private void updateSpinnerWithPrograms() {
+		// get a sorted array of all programs
+		String[] programNames = ProgramManager.getProgramNames();
+		Arrays.sort(programNames);
+		
+		// put into an adapter and assign to spinner
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, programNames);
+		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		programSpinner.setAdapter(adapter);
 	}
 	
 	/**
