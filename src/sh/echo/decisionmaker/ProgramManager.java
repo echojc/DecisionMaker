@@ -1,8 +1,10 @@
 package sh.echo.decisionmaker;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -12,13 +14,20 @@ import android.content.SharedPreferences.Editor;
 import android.util.Log;
 
 public class ProgramManager {
-	
+
+	// constants
 	private static final int WORD_LENGTH_MIN = 10;
 	private static final int WORD_LENGTH_DELTA = 4;
-	
 	private static final String PROGRAM_PREFS_NAME = "sh.echo.decisionmaker.programs";
+	
+	// enums
+	private static final int PROGRAM_ADDED = 0;
+	private static final int PROGRAM_REMOVED = 1;
+	private static final int PROGRAM_LOADED = 2;
 
+	// unsaved variables
 	private static Map<String, String[]> programs = new HashMap<String, String[]>();
+	private static List<ProgramsChangedListener> listeners = new ArrayList<ProgramsChangedListener>();
 	
 	/**
 	 * Loads all saved programs from shared preferences.
@@ -45,6 +54,9 @@ public class ProgramManager {
 			// add to hash
 			programs.put(programName, options.toArray(new String[options.size()]));
 		}
+		
+		// fire event
+		fireProgramsChanged(ProgramManager.PROGRAM_LOADED);
 	}
 	
 	/**
@@ -111,6 +123,9 @@ public class ProgramManager {
 			// overwrite in map
 			programs.put(programName, combinedOptions);
 		}
+		
+		// fire event
+		fireProgramsChanged(ProgramManager.PROGRAM_ADDED);
 	}
 	
 	/**
@@ -126,6 +141,9 @@ public class ProgramManager {
 		
 		// remove it
 		programs.remove(programName);
+
+		// fire event
+		fireProgramsChanged(ProgramManager.PROGRAM_REMOVED);
 	}
 	
 	/**
@@ -163,5 +181,46 @@ public class ProgramManager {
 				maxLength = s.length();
 		}
 		return Math.max(WORD_LENGTH_MIN, maxLength + WORD_LENGTH_DELTA);
+	}
+	
+	/**
+	 * Register a listener for shake gesture events.
+	 * @param listener
+	 */
+	public static void addProgramsChangedListener(ProgramsChangedListener listener) {
+		if (!listeners.contains(listener))
+			listeners.add(listener);
+	}
+	
+	/**
+	 * Unregister a listener from receiving shake gesture events.
+	 * @param listener
+	 */
+	public static void removeProgramsChangedListener(ProgramsChangedListener listener) {
+		if (listeners.contains(listener))
+			listeners.remove(listener);
+	}
+	
+	/**
+	 * Fires the ProgramsChanged event.
+	 * @param what One of PROGRAM_ADDED, PROGRAM_REMOVED, or PROGRAM_LOADED.
+	 */
+	private static void fireProgramsChanged(int what) {
+		if (listeners.isEmpty())
+			return;
+		
+		for (ProgramsChangedListener l : listeners)
+			l.programsChanged(what);
+	}
+	
+	/**
+	 * Listener interface for program change events.
+	 */
+	public interface ProgramsChangedListener {
+		/**
+		 * The collection of programs was modified in some way.
+		 * @param what One of PROGRAM_ADDED, PROGRAM_REMOVED, or PROGRAM_LOADED.
+		 */
+		void programsChanged(int what);
 	}
 }
