@@ -1,13 +1,11 @@
 package sh.echo.decisionmaker;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
+import sh.echo.helpers.SharedPreferencesHelper;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -18,7 +16,8 @@ public class ProgramManager {
 	// constants
 	private static final int WORD_LENGTH_MIN = 10;
 	private static final int WORD_LENGTH_DELTA = 4;
-	private static final String PROGRAM_PREFS_NAME = "sh.echo.decisionmaker.programs";
+	private static final String PREFS_NAME = "sh.echo.decisionmaker.programs";
+	private static final String PREFS_ALL_PROGRAMS = "all_program_names";
 	
 	// enums
 	private static final int PROGRAM_ADDED = 0;
@@ -26,33 +25,29 @@ public class ProgramManager {
 	private static final int PROGRAM_LOADED = 2;
 
 	// unsaved variables
-	private static Map<String, String[]> programs = new HashMap<String, String[]>();
+	private static Map<String, String[]> programs;
 	private static List<ProgramsChangedListener> listeners = new ArrayList<ProgramsChangedListener>();
 	
 	/**
 	 * Loads all saved programs from shared preferences.
 	 * @param context Any context in the application.
 	 */
-	@SuppressWarnings("unchecked")
 	public static void loadPrograms(Context context) {
+		// initialise hash
+		programs = new HashMap<String, String[]>();
+		
 		// get shared preferences
-		SharedPreferences prefs = context.getSharedPreferences(PROGRAM_PREFS_NAME, Context.MODE_PRIVATE);
+		SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
 		
 		// grab all key-value pairs
-		Map<String, ?> data = prefs.getAll();
-		for (String programName : data.keySet()) {
-			
-			// try to cast value to Set
-			Set<String> options;
-			try {
-				options = (Set<String>)data.get(programName);
-			} catch (ClassCastException e) {
-				Log.w("ProgramManager", "key with prefix but illegal value");
-				continue;
+		String[] programNames = SharedPreferencesHelper.getStringArray(prefs, PREFS_ALL_PROGRAMS);
+		
+		// loop over all program arrays
+		if (programNames != null) {
+			for (String name : programNames) {
+				String[] options = SharedPreferencesHelper.getStringArray(prefs, name);
+				programs.put(name, options);
 			}
-			
-			// add to hash
-			programs.put(programName, options.toArray(new String[options.size()]));
 		}
 		
 		// fire event
@@ -65,19 +60,18 @@ public class ProgramManager {
 	 */
 	public static void savePrograms(Context context) {
 		// get shared preferences editor
-		SharedPreferences prefs = context.getSharedPreferences(PROGRAM_PREFS_NAME, Context.MODE_PRIVATE);
+		SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
 		Editor editor = prefs.edit();
 		
 		// empty preferences and write everything back into it
+		editor.clear();
 		for (String programName : programs.keySet()) {
-			
-			// put options into a set
-			Set<String> options = new HashSet<String>();
-			Collections.addAll(options, programs.get(programName));
-			
-			// write to prefs
-			editor.putStringSet(programName, options);
+			String[] options = programs.get(programName);
+			SharedPreferencesHelper.putStringArray(editor, programName, options);
 		}
+		
+		// write all program names as well
+		SharedPreferencesHelper.putStringArray(editor, PREFS_ALL_PROGRAMS, programs.keySet().toArray(new String[programs.size()]));
 		
 		// commit
 		editor.commit();
