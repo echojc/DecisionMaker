@@ -22,7 +22,7 @@ import com.actionbarsherlock.view.MenuInflater;
 public class MainActivity extends SherlockActivity {
 
 	// constants
-	private final static char[] CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVXYZ0123456789!@#$%^&*()_+=[]\\{}|;':\",./<>?`~".toCharArray();
+	private static final char[] CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVXYZ0123456789!@#$%^&*()_+=[]\\{}|;':\",./<>?`~".toCharArray();
 	
 	// unsaved variables
 	private OnItemSelectedListener spinnerHandler;
