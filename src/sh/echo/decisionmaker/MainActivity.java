@@ -68,7 +68,7 @@ public class MainActivity extends SherlockFragmentActivity {
 		ProgramManager.loadPrograms(this);
 
 		// first run stuff
-		boolean firstRun = getPreferences(Context.MODE_PRIVATE).getBoolean("first_run", true);
+		boolean firstRun = true;//getPreferences(Context.MODE_PRIVATE).getBoolean("first_run", true);
 		if (firstRun) {
 			// add a default program if none exist
 			if (ProgramManager.getProgramCount() == 0)
@@ -256,10 +256,16 @@ public class MainActivity extends SherlockFragmentActivity {
 	 * Displays a random option from the current program.
 	 */
 	public void randomize() {
+		// make a single toast object to prevent it coming up more than once
+		if (randomizeToast == null)
+			randomizeToast = Toast.makeText(this, R.string.no_options_message, Toast.LENGTH_SHORT);
+		
 		// cache program name
 		String currentProgramName = getCurrentProgramName();
 		if (currentProgramName == null) {
-			Log.w("randomize()", "could not get program name");
+			// display toast
+			randomizeToast.show();
+			//Log.i("randomize()", "could not get program name");
 			return;
 		}
 		
@@ -271,10 +277,7 @@ public class MainActivity extends SherlockFragmentActivity {
 			warpText(options[random]);
 		} else {
 			// display toast
-			if (randomizeToast == null)
-				randomizeToast = Toast.makeText(this, getResources().getString(R.string.no_options_message), Toast.LENGTH_SHORT);
 			randomizeToast.show();
-			
 			Log.w("randomize()", "no options in " + currentProgramName);
 		}
 	}
@@ -298,7 +301,7 @@ public class MainActivity extends SherlockFragmentActivity {
 					
 					// reset text
 					if (!skipWarpText)
-						warpText(getResources().getString(R.string.option_display_default), R.color.nice_shade_of_light_green);
+						setDisplayToDefault();
 					skipWarpText = false;
 				}
 
@@ -351,6 +354,9 @@ public class MainActivity extends SherlockFragmentActivity {
 					ArrayAdapter<String> adapter = new ArrayAdapter<String>(finalContext, android.R.layout.simple_spinner_item, programNames);
 					adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 					programSpinner.setAdapter(adapter);
+					
+					// reset
+					setDisplayToDefault();
 				}
 			};
 		}
@@ -367,5 +373,12 @@ public class MainActivity extends SherlockFragmentActivity {
 			return new String((String)programSpinner.getItemAtPosition(currentSpinnerPosition));
 		else
 			return null;
+	}
+	
+	/**
+	 * Sets the display back to the default message.
+	 */
+	private void setDisplayToDefault() {
+		warpText(getResources().getString(R.string.option_display_default), R.color.nice_shade_of_light_green);
 	}
 }

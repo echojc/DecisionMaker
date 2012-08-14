@@ -41,13 +41,14 @@ public class DeleteConfirmDialogFragment extends DialogFragment {
 		return new AlertDialog.Builder(getActivity())
 			.setTitle(R.string.delete_confirm_dialog_title)
 			.setMessage(message)
-			.setPositiveButton(android.R.string.yes, new OnClickListener() {
+			.setPositiveButton(R.string.yes, new OnClickListener() {
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
-					// delete
+					// confirmed by user, so remove
+					ProgramManager.removeProgram(itemName);
 				}
 			})
-			.setNegativeButton(android.R.string.no, new OnClickListener() {
+			.setNegativeButton(R.string.no, new OnClickListener() {
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
 					dialog.dismiss();
