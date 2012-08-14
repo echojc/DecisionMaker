@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
 
 public class MainActivity extends SherlockActivity {
 
@@ -88,6 +89,20 @@ public class MainActivity extends SherlockActivity {
 	    MenuInflater inflater = getSupportMenuInflater();
 	    inflater.inflate(R.menu.activity_main, menu);
 	    return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+	    switch (item.getItemId()) {
+	    case R.id.menu_delete:
+	    	DeleteConfirmDialogFragment.newInstance(getCurrentProgramName()).show(getFragmentManager(), "delete");
+	    	return true;
+        case R.id.menu_about:
+        	AboutDialogFragment.newInstance().show(getFragmentManager(), "about");
+            return true;
+        default:
+            return super.onOptionsItemSelected(item);
+	    }
 	}
 	
 	@Override

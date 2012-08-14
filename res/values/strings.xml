@@ -3,11 +3,13 @@
     <string name="app_name">Decision Maker</string>
     <string name="title_activity_main">Decision Maker</string>
     <string name="select_program">Select your choices:</string>
-    <string name="default_program">None</string>
-    <string name="new_program">New</string>
     <string name="option_display_default">Shake!</string>
     
     <string name="no_options_message">No options to display!</string>
+    
+    <string name="about_dialog_message">by Jonathan Chow\n\nSource is available on GitHub:\nhttps://github.com/echo-sh/DecisionMaker</string>
+    <string name="delete_confirm_dialog_title">Delete</string>
+    <string name="delete_confirm_dialog_message">Are you sure you want to delete \"%s\"?</string>
     
     <string name="welcome_message">Welcome! Simply shake to get started!</string>
     <string name="default_program_name">Yes or No</string>
