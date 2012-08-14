@@ -18,12 +18,12 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 
-public class MainActivity extends SherlockActivity {
+public class MainActivity extends SherlockFragmentActivity {
 
 	// constants
 	private static final char[] CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVXYZ0123456789!@#$%^&*()_+=[]\\{}|;':\",./<>?`~".toCharArray();
@@ -107,10 +107,10 @@ public class MainActivity extends SherlockActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 	    switch (item.getItemId()) {
 	    case R.id.menu_delete:
-	    	DeleteConfirmDialogFragment.newInstance(getCurrentProgramName()).show(getFragmentManager(), "delete");
+	    	DeleteConfirmDialogFragment.newInstance(getCurrentProgramName()).show(getSupportFragmentManager(), "delete");
 	    	return true;
         case R.id.menu_about:
-        	AboutDialogFragment.newInstance().show(getFragmentManager(), "about");
+        	AboutDialogFragment.newInstance().show(getSupportFragmentManager(), "about");
             return true;
         default:
             return super.onOptionsItemSelected(item);
