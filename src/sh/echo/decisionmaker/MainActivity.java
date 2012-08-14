@@ -92,6 +92,7 @@ public class MainActivity extends SherlockActivity {
 	
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
 		outState.putInt("currentSpinnerPosition", currentSpinnerPosition);
 		outState.putString("currentOption", currentOption);
 	}
@@ -107,7 +108,7 @@ public class MainActivity extends SherlockActivity {
 	public void onPause() {
 		ShakeGestureManager.disable();
 		ShakeGestureManager.removeShakeGestureListener(getShakeGestureListener());
-		super.onStop();
+		super.onPause();
 	}
 	
 	/**
