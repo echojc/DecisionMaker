@@ -7,6 +7,7 @@ import sh.echo.helpers.ShakeGestureManager;
 import sh.echo.helpers.ShakeGestureManager.ShakeGestureListener;
 import sh.echo.helpers.UserActivityManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.util.Log;
@@ -106,6 +107,15 @@ public class MainActivity extends SherlockFragmentActivity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 	    switch (item.getItemId()) {
+	    case R.id.menu_new:
+	    	Intent intentNew = new Intent(this, EditActivity.class);
+	    	startActivity(intentNew);
+	    	return true;
+	    case R.id.menu_edit:
+	    	Intent intentEdit = new Intent(this, EditActivity.class);
+	    	intentEdit.putExtra(EditActivity.INTENT_PROGRAM_NAME, getCurrentProgramName());
+	    	startActivity(intentEdit);
+	    	return true;
 	    case R.id.menu_delete:
 	    	DeleteConfirmDialogFragment.newInstance(getCurrentProgramName()).show(getSupportFragmentManager(), "delete");
 	    	return true;
@@ -115,6 +125,16 @@ public class MainActivity extends SherlockFragmentActivity {
         default:
             return super.onOptionsItemSelected(item);
 	    }
+	}
+	
+	@Override
+	public boolean onPrepareOptionsMenu (Menu menu) {
+		// disable edit/delete options if there are no more programs left
+	    if (getCurrentProgramName() == null)
+	        menu.setGroupEnabled(R.id.menu_group_modify, false);
+	    else
+	    	menu.setGroupEnabled(R.id.menu_group_modify, true);
+	    return true;
 	}
 	
 	@Override

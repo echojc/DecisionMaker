@@ -1,0 +1,47 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="12dp"
+    android:orientation="vertical" >
+    
+    <EditText 
+        android:id="@+id/editor_program_name"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:maxLines="1"
+        android:inputType="textEmailSubject"
+        android:hint="@string/editor_name" />
+    
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+        
+	    <EditText
+	        android:id="@+id/editor_option_text"
+	        android:layout_width="0dp"
+	        android:layout_height="wrap_content"
+	        android:layout_weight="1"
+	        android:maxLines="1"
+	        android:inputType="textShortMessage"
+	        android:hint="@string/editor_new_option" />
+	    
+	    <Button
+	        android:id="@+id/editor_add_button"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="@string/editor_add"
+	        android:onClick="addButton_OnClick" />
+        
+    </LinearLayout>
+    
+    <ListView 
+        android:id="@+id/editor_option_list"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+        
+    </ListView>
+
+</LinearLayout>
