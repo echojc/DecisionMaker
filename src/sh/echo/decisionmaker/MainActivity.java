@@ -2,9 +2,12 @@ package sh.echo.decisionmaker;
 
 import java.util.Arrays;
 
+import sh.echo.decisionmaker.ProgramManager.ProgramsChangedListener;
 import sh.echo.helpers.ShakeGestureManager;
 import sh.echo.helpers.ShakeGestureManager.ShakeGestureListener;
 import sh.echo.helpers.UserActivityManager;
+import android.content.Context;
+import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -28,6 +31,7 @@ public class MainActivity extends SherlockActivity {
 	// unsaved variables
 	private OnItemSelectedListener spinnerHandler;
 	private ShakeGestureListener accelHandler;
+	private ProgramsChangedListener programHandler;
 	private Thread warpTextThread;
 	private Toast randomizeToast;
 	
@@ -59,17 +63,25 @@ public class MainActivity extends SherlockActivity {
 			skipWarpText = true;
 		}
 
-		// load existing programs
+		// hook into program management and load existing programs
+		ProgramManager.addProgramsChangedListener(getProgramsChangedListener());
 		ProgramManager.loadPrograms(this);
 
-		// add a default option if there are none
-		if (ProgramManager.getProgramCount() == 0) {
-			ProgramManager.addProgram(getResources().getString(R.string.default_program_name), getResources().getStringArray(R.array.default_program_options));
+		// first run stuff
+		boolean firstRun = getPreferences(Context.MODE_PRIVATE).getBoolean("first_run", true);
+		if (firstRun) {
+			// add a default program if none exist
+			if (ProgramManager.getProgramCount() == 0)
+				ProgramManager.addProgram(getResources().getString(R.string.default_program_name), getResources().getStringArray(R.array.default_program_options));
+			
+			// show welcome toast
 			Toast.makeText(this, getResources().getString(R.string.welcome_message), Toast.LENGTH_LONG).show();
+			
+			// write to preferences to prevent re-run in the future
+			Editor editor = getPreferences(Context.MODE_PRIVATE).edit();
+			editor.putBoolean("first_run", false);
+			editor.commit();
 		}
-		
-		// put programs into spinner
-		updateSpinnerWithPrograms();
 		
 		// create listener for item select on spinner
 		programSpinner.setOnItemSelectedListener(getOnItemSelectedListener());
@@ -126,18 +138,11 @@ public class MainActivity extends SherlockActivity {
 		super.onPause();
 	}
 	
-	/**
-	 * Updates the program spinner with all currently existing programs.
-	 */
-	private void updateSpinnerWithPrograms() {
-		// get a sorted array of all programs
-		String[] programNames = ProgramManager.getProgramNames();
-		Arrays.sort(programNames);
-		
-		// put into an adapter and assign to spinner
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, programNames);
-		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		programSpinner.setAdapter(adapter);
+	@Override
+	public void onStop() {
+		// save all programs
+		ProgramManager.savePrograms(this);
+		super.onStop();
 	}
 	
 	/**
@@ -314,7 +319,6 @@ public class MainActivity extends SherlockActivity {
 		if (accelHandler == null) {
 			accelHandler = new ShakeGestureListener() {
 
-				@Override
 				public void onShake() {
 					// display a new option
 					randomize();
@@ -325,6 +329,33 @@ public class MainActivity extends SherlockActivity {
 			};
 		}
 		return accelHandler;
+	}
+	
+	/**
+	 * Gets the callback handler for program changes.
+	 * @return
+	 */
+	private ProgramsChangedListener getProgramsChangedListener() {
+		if (programHandler == null) {
+			// need to pass a context
+			final Context finalContext = this;
+			
+			programHandler = new ProgramsChangedListener() {
+				
+				public void programsChanged(int what) {
+					// get a sorted array of all programs
+					String[] programNames = ProgramManager.getProgramNames();
+					Arrays.sort(programNames);
+					
+					// put into an adapter and assign to spinner
+					ArrayAdapter<String> adapter = new ArrayAdapter<String>(finalContext, android.R.layout.simple_spinner_item, programNames);
+					adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+					programSpinner.setAdapter(adapter);
+				}
+			};
+		}
+		
+		return programHandler;
 	}
 	
 	/**
