@@ -12,6 +12,8 @@
     <string name="editor_options">Options</string>
     <string name="editor_new_option">New option</string>
     <string name="editor_add">Add</string>
+    <string name="editor_delete">Delete</string>
+    <string name="editor_edit">Edit</string>
     
     <string name="about_dialog_message">by Jonathan Chow\n\nSource is available on GitHub:\nhttps://github.com/echo-sh/DecisionMaker</string>
     <string name="delete_confirm_dialog_title">Delete</string>

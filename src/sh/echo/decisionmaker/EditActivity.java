@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
@@ -27,6 +28,7 @@ public class EditActivity extends SherlockFragmentActivity {
 	private ListView list;
 	private EditText programNameText;
 	private EditText optionText;
+	private Button omniButton;
 	
 	// saved variables
 	private ArrayList<String> options;
@@ -47,6 +49,7 @@ public class EditActivity extends SherlockFragmentActivity {
         list = (ListView)findViewById(R.id.editor_option_list);
         programNameText = (EditText)findViewById(R.id.editor_program_name);
         optionText = (EditText)findViewById(R.id.editor_option_text);
+        omniButton = (Button)findViewById(R.id.editor_omni_button);
         
         // see if we should load a particular program
         Intent intent = getIntent();

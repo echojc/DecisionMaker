@@ -28,7 +28,7 @@
 	        android:hint="@string/editor_new_option" />
 	    
 	    <Button
-	        android:id="@+id/editor_add_button"
+	        android:id="@+id/editor_omni_button"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:text="@string/editor_add"
