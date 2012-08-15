@@ -37,6 +37,7 @@ public class EditActivity extends SherlockFragmentActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit);
+        getSupportActionBar().setIcon(R.drawable.ic_action_note);
         
         // initialise options list
         if (savedInstanceState != null) {
