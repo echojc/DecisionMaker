@@ -63,7 +63,7 @@ public class EditActivity extends SherlockFragmentActivity {
 	    switch (item.getItemId()) {
 	    case R.id.menu_save:
 	    	// TODO: save
-	    	finish();
+	    	finishWithTransition();
 	    	return true;
 	    case R.id.menu_cancel:
 	    	// handle identically to pressing back
@@ -83,7 +83,7 @@ public class EditActivity extends SherlockFragmentActivity {
     
     @Override
     public void onBackPressed() {
-    	super.onBackPressed();
+    	finishWithTransition();
     }
     
     /**
@@ -96,5 +96,13 @@ public class EditActivity extends SherlockFragmentActivity {
     	adapter.notifyDataSetChanged();
     	
     	optionText.setText("");
+    }
+    
+    /**
+     * Use this instead of finish().
+     */
+    private void finishWithTransition() {
+    	finish();
+    	overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
     }
 }
