@@ -2,13 +2,13 @@
     
 	<item android:id="@+id/menu_save"
 		android:title="@string/menu_save"
-		android:icon="@drawable/ic_menu_save"
+		android:icon="@drawable/ic_action_save"
 		android:orderInCategory="1"
 		android:showAsAction="ifRoom|withText" />
 
 	<item android:id="@+id/menu_cancel"
 		android:title="@string/menu_cancel"
-		android:icon="@drawable/ic_menu_close_clear_cancel"
+		android:icon="@drawable/ic_action_cancel"
 		android:orderInCategory="1"
 		android:visible="false"
 		android:showAsAction="ifRoom|withText" />
