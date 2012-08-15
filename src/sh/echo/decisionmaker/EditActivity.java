@@ -1,7 +1,9 @@
 package sh.echo.decisionmaker;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -45,6 +47,23 @@ public class EditActivity extends SherlockFragmentActivity {
         list = (ListView)findViewById(R.id.editor_option_list);
         programNameText = (EditText)findViewById(R.id.editor_program_name);
         optionText = (EditText)findViewById(R.id.editor_option_text);
+        
+        // see if we should load a particular program
+        Intent intent = getIntent();
+        String programName = intent.getStringExtra(INTENT_PROGRAM_NAME);
+        if (programName != null) {
+        	// set the program name
+        	programNameText.setText(programName);
+        	
+        	// load options
+        	String[] optionsArray = ProgramManager.getOptions(programName);
+        	if (optionsArray != null) {
+        		options.addAll(Arrays.asList(optionsArray));
+        	}
+        	
+        	// set focus to textbox for new options
+        	optionText.requestFocus();
+        }
         
         // set up adapter for list
         adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, options);
