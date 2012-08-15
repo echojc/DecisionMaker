@@ -3,6 +3,8 @@ package sh.echo.decisionmaker;
 import java.util.Arrays;
 
 import sh.echo.decisionmaker.ProgramManager.ProgramsChangedListener;
+import sh.echo.decisionmaker.fragments.AboutDialogFragment;
+import sh.echo.decisionmaker.fragments.DeleteConfirmDialogFragment;
 import sh.echo.helpers.ShakeGestureManager;
 import sh.echo.helpers.ShakeGestureManager.ShakeGestureListener;
 import sh.echo.helpers.UserActivityManager;

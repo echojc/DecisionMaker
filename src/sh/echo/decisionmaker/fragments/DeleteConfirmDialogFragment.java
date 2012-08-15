@@ -1,5 +1,7 @@
-package sh.echo.decisionmaker;
+package sh.echo.decisionmaker.fragments;
 
+import sh.echo.decisionmaker.ProgramManager;
+import sh.echo.decisionmaker.R;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
