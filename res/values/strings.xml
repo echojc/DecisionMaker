@@ -2,7 +2,7 @@
 
     <string name="app_name">Decision Maker</string>
     <string name="title_activity_main">Decision Maker</string>
-    <string name="select_program">Select your choices:</string>
+    <string name="select_program">Select your options:</string>
     <string name="option_display_default">Shake!</string>
     
     <string name="no_options_message">No options to display!</string>
