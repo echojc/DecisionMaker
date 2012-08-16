@@ -49,8 +49,14 @@ public class MainActivity extends SherlockFragmentActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
+		// put spinner in actionbar
+		View actionBarView = getLayoutInflater().inflate(R.layout.actionbar_layout, null);
+		getSupportActionBar().setCustomView(actionBarView);
+		getSupportActionBar().setDisplayShowCustomEnabled(true);
+		getSupportActionBar().setTitle("");
+		
 		// set views
-		programSpinner = (Spinner)findViewById(R.id.current_program);
+		programSpinner = (Spinner)actionBarView.findViewById(R.id.current_program);
 		outputDisplay = (TextView)findViewById(R.id.option_display);
 		
 		// restore state variables
