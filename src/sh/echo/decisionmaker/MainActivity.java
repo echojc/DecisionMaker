@@ -70,7 +70,7 @@ public class MainActivity extends SherlockFragmentActivity {
 		ProgramManager.loadPrograms(this);
 
 		// first run stuff
-		boolean firstRun = true;//getPreferences(Context.MODE_PRIVATE).getBoolean("first_run", true);
+		boolean firstRun = getPreferences(Context.MODE_PRIVATE).getBoolean("first_run", true);
 		if (firstRun) {
 			// add a default program if none exist
 			if (ProgramManager.getProgramCount() == 0)
@@ -85,8 +85,8 @@ public class MainActivity extends SherlockFragmentActivity {
 			editor.commit();
 		}
 
-		// trigger program update
-		getProgramsChangedListener().programsChanged(-1);
+		// update program spinner
+		updateProgramSpinner();
 		
 		// create listener for item select on spinner
 		programSpinner.setOnItemSelectedListener(getOnItemSelectedListener());
@@ -309,6 +309,23 @@ public class MainActivity extends SherlockFragmentActivity {
 	}
 	
 	/**
+	 * Updates the spinner with data from ProgramManager.
+	 */
+	public void updateProgramSpinner() {
+		// get a sorted array of all programs
+		String[] programNames = ProgramManager.getProgramNames();
+		Arrays.sort(programNames);
+		
+		// put into an adapter and assign to spinner
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, programNames);
+		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		programSpinner.setAdapter(adapter);
+		
+		// reset
+		setDisplayToDefault();
+	}
+	
+	/**
 	 * Gets the callback handler for the main spinner.
 	 * @return
 	 */
@@ -362,23 +379,10 @@ public class MainActivity extends SherlockFragmentActivity {
 	 */
 	private ProgramsChangedListener getProgramsChangedListener() {
 		if (programHandler == null) {
-			// need to pass a context
-			final Context finalContext = this;
-			
 			programHandler = new ProgramsChangedListener() {
 				
 				public void programsChanged(int what) {
-					// get a sorted array of all programs
-					String[] programNames = ProgramManager.getProgramNames();
-					Arrays.sort(programNames);
-					
-					// put into an adapter and assign to spinner
-					ArrayAdapter<String> adapter = new ArrayAdapter<String>(finalContext, android.R.layout.simple_spinner_item, programNames);
-					adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-					programSpinner.setAdapter(adapter);
-					
-					// reset
-					setDisplayToDefault();
+					updateProgramSpinner();
 				}
 			};
 		}

@@ -10,7 +10,7 @@
     
     <string name="editor_name">Name</string>
     <string name="editor_options">Options</string>
-    <string name="editor_new_option">New option</string>
+    <string name="editor_new_option">Add an option</string>
     <string name="editor_add">Add</string>
     <string name="editor_delete">Delete</string>
     <string name="editor_edit">Edit</string>
@@ -20,9 +20,16 @@
     <string name="delete_confirm_dialog_message">Are you sure you want to delete \"%s\"?</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="back_confirm_dialog_title">Save</string>
+    <string name="back_confirm_dialog_message">Do you want to save your changes?</string>
     
     <string name="welcome_message">Welcome! Simply shake to get started!</string>
     <string name="default_program_name">Yes or No</string>
+    
+    <string name="editor_warn_empty_option">You can\'t have an empty option!</string>
+    <string name="editor_warn_no_name">You must have a name!</string>
+    <string name="editor_warn_duplicate_name">This name is already used!</string>
+    <string name="editor_warn_no_options">You must have at least one option!</string>
 
     <string-array name="default_program_options">
         <item>Yes</item>
