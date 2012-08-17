@@ -2,13 +2,13 @@ package sh.echo.decisionmaker;
 
 import java.util.Arrays;
 
-import sh.echo.decisionmaker.ProgramManager.ProgramsChangedListener;
 import sh.echo.decisionmaker.fragments.AboutDialogFragment;
 import sh.echo.decisionmaker.fragments.DeleteConfirmDialogFragment;
 import sh.echo.helpers.ShakeGestureManager;
 import sh.echo.helpers.ShakeGestureManager.ShakeGestureListener;
 import sh.echo.helpers.UserActivityManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
@@ -34,7 +34,6 @@ public class MainActivity extends SherlockFragmentActivity {
 	// unsaved variables
 	private OnItemSelectedListener spinnerHandler;
 	private ShakeGestureListener accelHandler;
-	private ProgramsChangedListener programHandler;
 	private Thread warpTextThread;
 	private Toast randomizeToast;
 	
@@ -121,7 +120,19 @@ public class MainActivity extends SherlockFragmentActivity {
 	    	startActivity(intentEdit);
 	    	return true;
 	    case R.id.menu_delete:
-	    	DeleteConfirmDialogFragment.newInstance(getCurrentProgramName()).show(getSupportFragmentManager(), "delete");
+	    	final String deleteItemName = getCurrentProgramName();
+	    	DeleteConfirmDialogFragment.newInstance(deleteItemName, new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					// if the user confirms delete, remove and update
+					if (which == DialogInterface.BUTTON_POSITIVE) {
+						ProgramManager.removeProgram(deleteItemName);
+						updateProgramSpinner();
+					}
+						
+					dialog.dismiss();
+				}
+	    	}).show(getSupportFragmentManager(), "delete");
 	    	return true;
         case R.id.menu_about:
         	AboutDialogFragment.newInstance().show(getSupportFragmentManager(), "about");
@@ -153,14 +164,12 @@ public class MainActivity extends SherlockFragmentActivity {
 		super.onResume();
 		ShakeGestureManager.enable();
 		ShakeGestureManager.addShakeGestureListener(getShakeGestureListener());
-		ProgramManager.addProgramsChangedListener(getProgramsChangedListener());
 	}
 	
 	@Override
 	public void onPause() {
 		ShakeGestureManager.disable();
 		ShakeGestureManager.removeShakeGestureListener(getShakeGestureListener());
-		ProgramManager.removeProgramsChangedListener(getProgramsChangedListener());
 		super.onPause();
 	}
 	
@@ -371,23 +380,6 @@ public class MainActivity extends SherlockFragmentActivity {
 			};
 		}
 		return accelHandler;
-	}
-	
-	/**
-	 * Gets the callback handler for program changes.
-	 * @return
-	 */
-	private ProgramsChangedListener getProgramsChangedListener() {
-		if (programHandler == null) {
-			programHandler = new ProgramsChangedListener() {
-				
-				public void programsChanged(int what) {
-					updateProgramSpinner();
-				}
-			};
-		}
-		
-		return programHandler;
 	}
 	
 	/**
