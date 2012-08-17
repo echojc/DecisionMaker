@@ -66,8 +66,7 @@ public class MainActivity extends SherlockFragmentActivity {
 			skipWarpText = true;
 		}
 
-		// hook into program management and load existing programs
-		ProgramManager.addProgramsChangedListener(getProgramsChangedListener());
+		// load existing programs
 		ProgramManager.loadPrograms(this);
 
 		// first run stuff
@@ -85,6 +84,9 @@ public class MainActivity extends SherlockFragmentActivity {
 			editor.putBoolean("first_run", false);
 			editor.commit();
 		}
+
+		// trigger program update
+		getProgramsChangedListener().programsChanged(-1);
 		
 		// create listener for item select on spinner
 		programSpinner.setOnItemSelectedListener(getOnItemSelectedListener());
@@ -151,12 +153,14 @@ public class MainActivity extends SherlockFragmentActivity {
 		super.onResume();
 		ShakeGestureManager.enable();
 		ShakeGestureManager.addShakeGestureListener(getShakeGestureListener());
+		ProgramManager.addProgramsChangedListener(getProgramsChangedListener());
 	}
 	
 	@Override
 	public void onPause() {
 		ShakeGestureManager.disable();
 		ShakeGestureManager.removeShakeGestureListener(getShakeGestureListener());
+		ProgramManager.removeProgramsChangedListener(getProgramsChangedListener());
 		super.onPause();
 	}
 	
@@ -313,10 +317,6 @@ public class MainActivity extends SherlockFragmentActivity {
 			spinnerHandler = new OnItemSelectedListener() {
 				
 				public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-					if (pos + 1 == parent.getAdapter().getCount()) {
-						// TODO: create new activity
-						Log.i("OnItemSelectedListener", "creating new activity");
-					}
 					
 					currentSpinnerPosition = pos;
 					Log.i("OnItemSelectedListener", "selected item " + getCurrentProgramName());
