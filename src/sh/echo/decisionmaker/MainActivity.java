@@ -40,7 +40,7 @@ public class MainActivity extends SherlockFragmentActivity {
 	// saved state variables
 	private int currentSpinnerPosition = 0;
 	private String currentOption = null;
-	private boolean skipWarpText = false;
+	private boolean shakenNotStirred = false;
 	
 	// views
 	private Spinner programSpinner;
@@ -62,7 +62,6 @@ public class MainActivity extends SherlockFragmentActivity {
 			currentOption = savedInstanceState.getString("currentOption");
 			outputDisplay.setText(currentOption);
 			outputDisplay.setBackgroundColor(0x00ffffff);
-			skipWarpText = true;
 		}
 
 		// load existing programs
@@ -361,14 +360,15 @@ public class MainActivity extends SherlockFragmentActivity {
 			spinnerHandler = new OnItemSelectedListener() {
 				
 				public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-					
+					// save the current item to a class variable
 					currentSpinnerPosition = pos;
 					Log.i("OnItemSelectedListener", "selected item " + getCurrentProgramName());
 					
 					// reset text
-					if (!skipWarpText)
-						setDisplayToDefault();
-					skipWarpText = false;
+					setDisplayToDefault();
+					Log.i("listener", "1");
+					// set shaken flag
+					shakenNotStirred = true;
 				}
 
 				public void onNothingSelected(AdapterView<?> parent) {
@@ -415,6 +415,11 @@ public class MainActivity extends SherlockFragmentActivity {
 	 * Sets the display back to the default message.
 	 */
 	private void setDisplayToDefault() {
-		warpText(getResources().getString(R.string.option_display_default), R.color.nice_shade_of_light_green);
+		// get the default string
+		currentOption = getResources().getString(R.string.option_display_default);
+		
+		// display it
+		if (shakenNotStirred)
+			warpText(currentOption, R.color.nice_shade_of_light_green);
 	}
 }
