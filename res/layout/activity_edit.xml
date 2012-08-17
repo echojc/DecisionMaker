@@ -32,8 +32,19 @@
 	        android:layout_marginTop="4dp"
 	        android:layout_marginBottom="4dp"
 	        android:maxLines="1"
-	        android:inputType="textShortMessage"
+	        android:inputType="textShortMessage|textCapSentences"
 	        android:hint="@string/editor_new_option" />
+	    
+	    <ImageButton
+	        android:id="@+id/editor_cancel_button"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:src="@drawable/ic_action_cancel"
+	        android:background="@null"
+	        android:onClick="cancelButton_OnClick"
+	        android:layout_gravity="center"
+	        android:visibility="gone"
+	        android:contentDescription="@string/editor_cancel" />
 	    
 	    <View
 	        android:layout_width="1dp"
@@ -47,7 +58,7 @@
 	        android:layout_height="wrap_content"
 	        android:src="@drawable/ic_action_next"
 	        android:background="@null"
-	        android:onClick="addButton_OnClick"
+	        android:onClick="omniButton_OnClick"
 	        android:layout_gravity="center"
 	        android:contentDescription="@string/editor_add" />
         

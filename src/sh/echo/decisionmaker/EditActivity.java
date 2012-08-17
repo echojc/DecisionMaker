@@ -9,8 +9,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Gravity;
 import android.view.View;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -36,12 +39,14 @@ public class EditActivity extends SherlockFragmentActivity {
 	private ListView list;
 	private EditText programNameText;
 	private EditText optionText;
-	private ImageButton omniButton;
+	private ImageButton cancelButton;
 	
 	// saved variables
 	private ArrayList<String> options;
 	private boolean unsavedChanges;
 	private String originalProgramName;
+	private boolean inEditMode;
+	private int editOptionIndex;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -59,13 +64,16 @@ public class EditActivity extends SherlockFragmentActivity {
         list = (ListView)findViewById(R.id.editor_option_list);
         programNameText = (EditText)actionBar.getCustomView().findViewById(R.id.editor_program_name);
         optionText = (EditText)findViewById(R.id.editor_option_text);
-        omniButton = (ImageButton)findViewById(R.id.editor_omni_button);
+        cancelButton = (ImageButton)findViewById(R.id.editor_cancel_button);
         
         // initialise options list
         if (savedInstanceState != null) {
         	// load previous list
         	options = savedInstanceState.getStringArrayList("options");
         	unsavedChanges = savedInstanceState.getBoolean("unsavedChanges");
+        	originalProgramName = savedInstanceState.getString("originalProgramName");
+        	inEditMode = savedInstanceState.getBoolean("inEditMode");
+        	editOptionIndex = savedInstanceState.getInt("editOptionIndex");
         } else {
         	// create new
             options = new ArrayList<String>();
@@ -94,6 +102,9 @@ public class EditActivity extends SherlockFragmentActivity {
         // set up adapter for list
         adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, options);
         list.setAdapter(adapter);
+        
+        // set context menu for list
+        registerForContextMenu(list);
         
         // set default return code to cancel
         setResult(RESULT_CANCELED);
@@ -128,6 +139,44 @@ public class EditActivity extends SherlockFragmentActivity {
 	}
 	
 	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+		super.onCreateContextMenu(menu, v, menuInfo);
+		android.view.MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.edit_contextual, menu);
+	}
+	
+	@Override
+	public boolean onContextItemSelected(android.view.MenuItem item) {
+		AdapterContextMenuInfo info = (AdapterContextMenuInfo)item.getMenuInfo();
+		switch (item.getItemId()) {
+		case R.id.menu_edit_context_edit:
+			inEditMode = true;
+			editOptionIndex = (int)info.id;
+			
+			cancelButton.setVisibility(View.VISIBLE);
+			
+			optionText.setText(options.get(editOptionIndex));
+			optionText.selectAll();
+			optionText.requestFocus();
+			
+			String optionText = getResources().getString(R.string.editor_editing) + options.get(editOptionIndex);
+			options.remove(editOptionIndex);
+			options.add(editOptionIndex, optionText);
+			adapter.notifyDataSetChanged();
+			return true;
+		case R.id.menu_edit_context_delete:
+			// remove selected option
+			// must cast long to int to call the right overloaded method
+			options.remove((int)info.id);
+			adapter.notifyDataSetChanged();
+			unsavedChanges = true;
+			return true;
+		default:
+			return super.onContextItemSelected(item);
+		}
+	}
+	
+	@Override
 	public void onResume() {
 		super.onResume();
 		programNameText.addTextChangedListener(getTextWatcher());
@@ -145,10 +194,20 @@ public class EditActivity extends SherlockFragmentActivity {
     	
     	outState.putStringArrayList("options", options);
     	outState.putBoolean("unsavedChanges", unsavedChanges);
+    	outState.putString("originalProgramName", originalProgramName);
+    	outState.putBoolean("inEditMode", inEditMode);
+    	outState.putInt("editOptionIndex", editOptionIndex);
     }
     
     @Override
     public void onBackPressed() {
+    	
+    	// if we're editing, cancel edit
+    	if (inEditMode) {
+    		cancelButton_OnClick(cancelButton);
+    		return;
+    	}
+    	
     	// check for unsaved changes
     	if (unsavedChanges) {
     		BackConfirmDialogFragment.newInstance(new DialogInterface.OnClickListener() {
@@ -214,7 +273,7 @@ public class EditActivity extends SherlockFragmentActivity {
      * Callback for Add button.
      * @param v
      */
-    public void addButton_OnClick(View v) {
+    public void omniButton_OnClick(View v) {
     	String option = optionText.getText().toString();
     	
     	// check for empty string
@@ -226,11 +285,35 @@ public class EditActivity extends SherlockFragmentActivity {
     	}
     	
     	// add to list
-    	options.add(option);
+    	if (inEditMode) {
+    		options.remove(editOptionIndex);
+    		options.add(editOptionIndex, option);
+    	} else {
+    		options.add(option);
+    	}
+    	
     	adapter.notifyDataSetChanged();
     	unsavedChanges = true;
     	
+    	cancelButton.setVisibility(View.GONE);
     	optionText.setText("");
+    	inEditMode = false;
+    }
+    
+    /**
+     * Callback for cancel button (only visible in edit mode).
+     * @param v
+     */
+    public void cancelButton_OnClick(View v) {
+    	optionText.setText("");
+		inEditMode = false;
+		
+		cancelButton.setVisibility(View.GONE);
+		
+		String originalOption = options.get(editOptionIndex).replace(getResources().getString(R.string.editor_editing), "");
+		options.remove(editOptionIndex);
+		options.add(editOptionIndex, originalOption);
+		adapter.notifyDataSetChanged();
     }
     
     /**
