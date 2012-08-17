@@ -77,7 +77,7 @@ public class MainActivity extends SherlockFragmentActivity {
 				ProgramManager.addProgram(getResources().getString(R.string.default_program_name), getResources().getStringArray(R.array.default_program_options));
 			
 			// show welcome toast
-			Toast.makeText(this, getResources().getString(R.string.welcome_message), Toast.LENGTH_LONG).show();
+			Toast.makeText(this, R.string.welcome_message, Toast.LENGTH_LONG).show();
 			
 			// write to preferences to prevent re-run in the future
 			Editor editor = getPreferences(Context.MODE_PRIVATE).edit();
