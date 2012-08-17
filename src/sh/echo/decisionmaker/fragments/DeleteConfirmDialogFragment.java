@@ -11,29 +11,26 @@ import android.support.v4.app.DialogFragment;
 import android.util.Log;
 
 public class DeleteConfirmDialogFragment extends DialogFragment {
+	
+	// for displaying which option is being deleted
+	private String itemName;
 
 	/**
 	 * Creates an instance of DeleteConfirmDialogFragment for use.
 	 * @return
 	 */
 	public static DeleteConfirmDialogFragment newInstance(String itemName) {
-		// store into bundle
-		Bundle args = new Bundle();
-		args.putString("itemName", itemName);
-		
-		// assign bundle to fragment
 		DeleteConfirmDialogFragment fragment = new DeleteConfirmDialogFragment();
-		fragment.setArguments(args);
+		fragment.itemName = itemName;
 		return fragment;
 	}
 
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 		// get saved arguments
-		final String itemName = getArguments().getString("itemName");
 		if (itemName == null) {
-			Log.e("DeleteConfirmDialogFragment", "no program name supplied");
-			return null;
+			Log.w("DeleteConfirmDialogFragment", "no program name supplied");
+			itemName = "";
 		}
 		
 		// build message string
