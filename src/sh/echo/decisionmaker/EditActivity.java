@@ -94,6 +94,9 @@ public class EditActivity extends SherlockFragmentActivity {
         // set up adapter for list
         adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, options);
         list.setAdapter(adapter);
+        
+        // set default return code to cancel
+        setResult(RESULT_CANCELED);
     }
     
 	@Override
@@ -201,6 +204,9 @@ public class EditActivity extends SherlockFragmentActivity {
     	ProgramManager.savePrograms(this);
     	
     	// saved
+    	Intent data = new Intent();
+    	data.putExtra(INTENT_PROGRAM_NAME, programName);
+    	setResult(RESULT_OK, data);
     	return true;
     }
     

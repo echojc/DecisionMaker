@@ -85,7 +85,7 @@ public class MainActivity extends SherlockFragmentActivity {
 		}
 
 		// update program spinner
-		updateProgramSpinner();
+		updateProgramSpinner(null);
 		
 		// create listener for item select on spinner
 		programSpinner.setOnItemSelectedListener(getOnItemSelectedListener());
@@ -112,12 +112,12 @@ public class MainActivity extends SherlockFragmentActivity {
 	    switch (item.getItemId()) {
 	    case R.id.menu_new:
 	    	Intent intentNew = new Intent(this, EditActivity.class);
-	    	startActivity(intentNew);
+	    	startActivityForResult(intentNew, 0);
 	    	return true;
 	    case R.id.menu_edit:
 	    	Intent intentEdit = new Intent(this, EditActivity.class);
 	    	intentEdit.putExtra(EditActivity.INTENT_PROGRAM_NAME, getCurrentProgramName());
-	    	startActivity(intentEdit);
+	    	startActivityForResult(intentEdit, 0);
 	    	return true;
 	    case R.id.menu_delete:
 	    	final String deleteItemName = getCurrentProgramName();
@@ -127,7 +127,7 @@ public class MainActivity extends SherlockFragmentActivity {
 					// if the user confirms delete, remove and update
 					if (which == DialogInterface.BUTTON_POSITIVE) {
 						ProgramManager.removeProgram(deleteItemName);
-						updateProgramSpinner();
+						updateProgramSpinner(null);
 					}
 						
 					dialog.dismiss();
@@ -178,6 +178,16 @@ public class MainActivity extends SherlockFragmentActivity {
 		// save all programs
 		ProgramManager.savePrograms(this);
 		super.onStop();
+	}
+	
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		// if the editor saves, we get an OK result
+		if (resultCode == RESULT_OK) {
+			// update spinner and select new/updated program
+			String programName = data.getStringExtra(EditActivity.INTENT_PROGRAM_NAME);
+			updateProgramSpinner(programName);
+		}
 	}
 	
 	/**
@@ -319,8 +329,9 @@ public class MainActivity extends SherlockFragmentActivity {
 	
 	/**
 	 * Updates the spinner with data from ProgramManager.
+	 * @param selectProgram If set, this program is selected.
 	 */
-	public void updateProgramSpinner() {
+	public void updateProgramSpinner(String selectProgram) {
 		// get a sorted array of all programs
 		String[] programNames = ProgramManager.getProgramNames();
 		Arrays.sort(programNames);
@@ -329,6 +340,13 @@ public class MainActivity extends SherlockFragmentActivity {
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, programNames);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		programSpinner.setAdapter(adapter);
+		
+		// select specified program if set
+		if (selectProgram != null) {
+			int position = Arrays.binarySearch(programNames, selectProgram);
+			if (position >= 0)
+				programSpinner.setSelection(position);
+		}
 		
 		// reset
 		setDisplayToDefault();
