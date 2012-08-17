@@ -2,46 +2,55 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="12dp"
     android:orientation="vertical" >
     
-    <EditText 
-        android:id="@+id/editor_program_name"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:maxLines="1"
-        android:inputType="textEmailSubject"
-        android:hint="@string/editor_name" />
+    <FrameLayout android:id="@+id/my_content"
+            android:layout_width="match_parent"
+            android:layout_height="0dip"
+            android:layout_weight="1" >
+	    
+	    <ListView 
+	        android:id="@+id/editor_option_list"
+	        android:layout_width="fill_parent"
+	        android:layout_height="fill_parent" />
+	    
+    </FrameLayout>
     
-    <LinearLayout
-        android:layout_width="fill_parent"
+	<LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal" >
+        android:orientation="horizontal"
+        android:paddingLeft="4dp"
+        android:paddingRight="4dp"
+        android:background="@drawable/editor_border" >
         
 	    <EditText
 	        android:id="@+id/editor_option_text"
 	        android:layout_width="0dp"
 	        android:layout_height="wrap_content"
 	        android:layout_weight="1"
+	        android:layout_marginTop="4dp"
+	        android:layout_marginBottom="4dp"
 	        android:maxLines="1"
 	        android:inputType="textShortMessage"
 	        android:hint="@string/editor_new_option" />
 	    
-	    <Button
+	    <View
+	        android:layout_width="1dp"
+	        android:layout_height="fill_parent"
+	        android:layout_margin="8dp"
+	        android:background="#d0d0d0" />
+	    
+	    <ImageButton
 	        android:id="@+id/editor_omni_button"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
-	        android:text="@string/editor_add"
-	        android:onClick="addButton_OnClick" />
+	        android:src="@drawable/ic_action_next"
+	        android:background="@null"
+	        android:onClick="addButton_OnClick"
+	        android:layout_gravity="center"
+	        android:contentDescription="@string/editor_add" />
         
     </LinearLayout>
-    
-    <ListView 
-        android:id="@+id/editor_option_list"
-        android:layout_width="fill_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
-        
-    </ListView>
 
 </LinearLayout>

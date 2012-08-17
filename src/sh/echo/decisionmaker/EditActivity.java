@@ -9,8 +9,10 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 
+import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
@@ -28,7 +30,7 @@ public class EditActivity extends SherlockFragmentActivity {
 	private ListView list;
 	private EditText programNameText;
 	private EditText optionText;
-	private Button omniButton;
+	private ImageButton omniButton;
 	
 	// saved variables
 	private ArrayList<String> options;
@@ -37,7 +39,6 @@ public class EditActivity extends SherlockFragmentActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit);
-        getSupportActionBar().setIcon(R.drawable.ic_action_note);
         
         // initialise options list
         if (savedInstanceState != null) {
@@ -46,11 +47,19 @@ public class EditActivity extends SherlockFragmentActivity {
             options = new ArrayList<String>();
         }
         
+        // set up action bar 
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        View actionBarView = getLayoutInflater().inflate(R.layout.actionbar_editor, null);
+        actionBar.setCustomView(actionBarView);
+        actionBar.setDisplayShowCustomEnabled(true);
+        actionBar.setTitle("");
+        
         // get views
         list = (ListView)findViewById(R.id.editor_option_list);
-        programNameText = (EditText)findViewById(R.id.editor_program_name);
+        programNameText = (EditText)actionBar.getCustomView().findViewById(R.id.editor_program_name);
         optionText = (EditText)findViewById(R.id.editor_option_text);
-        omniButton = (Button)findViewById(R.id.editor_omni_button);
+        omniButton = (ImageButton)findViewById(R.id.editor_omni_button);
         
         // see if we should load a particular program
         Intent intent = getIntent();
@@ -84,14 +93,18 @@ public class EditActivity extends SherlockFragmentActivity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 	    switch (item.getItemId()) {
+	    
 	    case R.id.menu_save:
 	    	// TODO: save
 	    	finishWithTransition();
 	    	return true;
+	    	
+	    case android.R.id.home:
 	    case R.id.menu_cancel:
 	    	// handle identically to pressing back
 	    	onBackPressed();
 	    	return true;
+	    	
         default:
             return super.onOptionsItemSelected(item);
 	    }

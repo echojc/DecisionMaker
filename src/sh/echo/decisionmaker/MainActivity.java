@@ -51,7 +51,6 @@ public class MainActivity extends SherlockFragmentActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		getSupportActionBar().setIcon(R.drawable.ic_action_question);
 		
 		// set views
 		programSpinner = (Spinner)findViewById(R.id.current_program);

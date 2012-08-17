@@ -13,7 +13,8 @@
         android:theme="@android:style/Theme.Holo.Light" >
         <activity
             android:name=".MainActivity"
-            android:label="@string/title_activity_main" >
+            android:label="@string/title_activity_main"
+            android:logo="@drawable/ic_action_question" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -21,7 +22,9 @@
         </activity>
         <activity
             android:name=".EditActivity"
-            android:label="@string/title_activity_edit" >
+            android:label=""
+            android:logo="@drawable/ic_action_note"
+            android:windowSoftInputMode="adjustResize" >
         </activity>
     </application>
 
