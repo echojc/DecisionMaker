@@ -9,27 +9,34 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.ContextMenu;
-import android.view.ContextMenu.ContextMenuInfo;
+import android.util.Log;
+import android.util.SparseBooleanArray;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.View;
-import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.view.inputmethod.EditorInfo;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.actionbarsherlock.view.ActionMode;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 
-public class EditActivity extends SherlockFragmentActivity implements TextWatcher, DialogInterface.OnClickListener {
+public class EditActivity extends SherlockFragmentActivity implements ActionMode.Callback, TextWatcher, DialogInterface.OnClickListener {
 	
 	// constants
 	public static final String INTENT_PROGRAM_NAME = "sh.echo.decisionmaker.program_name";
+	
+	// statics
+	private static ActionMode actionMode = null;
 	
 	// unsaved variables
 	private ArrayAdapter<String> adapter;
@@ -38,6 +45,7 @@ public class EditActivity extends SherlockFragmentActivity implements TextWatche
 	private ListView list;
 	private EditText programNameText;
 	private EditText optionText;
+	private ImageButton omniButton;
 	private ImageButton cancelButton;
 	
 	// saved variables
@@ -45,7 +53,7 @@ public class EditActivity extends SherlockFragmentActivity implements TextWatche
 	private boolean unsavedChanges;
 	private String originalProgramName;
 	private boolean inEditMode;
-	private int editOptionIndex;
+	private int editOptionIndex = -1;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -63,6 +71,7 @@ public class EditActivity extends SherlockFragmentActivity implements TextWatche
         list = (ListView)findViewById(R.id.editor_option_list);
         programNameText = (EditText)actionBar.getCustomView().findViewById(R.id.editor_program_name);
         optionText = (EditText)findViewById(R.id.editor_option_text);
+        omniButton = (ImageButton)findViewById(R.id.editor_omni_button);
         cancelButton = (ImageButton)findViewById(R.id.editor_cancel_button);
         
         // initialise options list
@@ -98,12 +107,60 @@ public class EditActivity extends SherlockFragmentActivity implements TextWatche
             }
         }
         
-        // set up adapter for list
-        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, options);
+        // set up adapter for list with override for edit mode
+        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_multiple_choice, options) {
+        	@Override
+        	public boolean isEnabled(int position) {
+        		if (inEditMode) {
+        			return position == editOptionIndex;
+        		} else {
+        			return super.isEnabled(position);
+        		}
+        	}
+        };
         list.setAdapter(adapter);
         
-        // set context menu for list
-        registerForContextMenu(list);
+        // set up listener for opening action mode
+        final ActionMode.Callback self = this;
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				// exit edit mode if we're in it
+				if (inEditMode) {
+					disableEditMode();
+					return;
+				}
+				
+				// if we're not in action mode, go into action mode
+				if (actionMode == null) {
+					actionMode = startActionMode(self);
+				}
+				
+				// only <API7 method available for getting count efficiently
+				@SuppressWarnings("deprecation")
+				int selectedCount = list.getCheckItemIds().length;
+				
+				// only show edit button if one item is selected
+				actionMode.getMenu().findItem(R.id.menu_edit_context_edit).setVisible(selectedCount == 1);
+				
+				// disable action menu if no items are selected
+				if (selectedCount == 0)
+					actionMode.finish();
+			}
+        });
+        
+        // set up ime listener for adding new options
+        optionText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+			@Override
+			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+				// treat "go" as triggering an add operation
+				if (actionId == EditorInfo.IME_ACTION_GO) {
+					omniButton_OnClick(omniButton);
+					return true;
+				}
+				return false;
+			}
+		});
         
         // set default return code to cancel
         setResult(RESULT_CANCELED);
@@ -138,41 +195,80 @@ public class EditActivity extends SherlockFragmentActivity implements TextWatche
 	}
 	
 	@Override
-	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
-		super.onCreateContextMenu(menu, v, menuInfo);
-		android.view.MenuInflater inflater = getMenuInflater();
+	public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+		MenuInflater inflater = mode.getMenuInflater();
 		inflater.inflate(R.menu.edit_contextual, menu);
+		mode.setTitle(R.string.editor_options);
+		return true;
 	}
 	
 	@Override
-	public boolean onContextItemSelected(android.view.MenuItem item) {
-		AdapterContextMenuInfo info = (AdapterContextMenuInfo)item.getMenuInfo();
+	public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+		return false;
+	}
+	
+	@Override
+	public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+		// get all selected items
+		SparseBooleanArray checkedItems = list.getCheckedItemPositions();
+		
 		switch (item.getItemId()) {
 		case R.id.menu_edit_context_edit:
 			inEditMode = true;
-			editOptionIndex = (int)info.id;
+			
+			// find which item is checked
+			for (int i = 0; i < options.size(); i++) {
+				if (checkedItems.get(i)) {
+					editOptionIndex = i;
+					break;
+				}
+			}
+			
+			if (editOptionIndex == -1) {
+				Log.w("Editor", "trying to edit but nothing selected");
+				return false;
+			}
 			
 			cancelButton.setVisibility(View.VISIBLE);
+			list.setItemChecked(editOptionIndex, true);
 			
-			optionText.setText(options.get(editOptionIndex));
+			String option = options.get(editOptionIndex);
+			
+			actionMode.getMenu().findItem(R.id.menu_edit_context_edit).setVisible(false);
+			actionMode.getMenu().findItem(R.id.menu_edit_context_delete).setVisible(false);
+			actionMode.setTitle(String.format(getResources().getString(R.string.editor_editing), option));
+			
+			optionText.setText(option);
 			optionText.selectAll();
 			optionText.requestFocus();
-			
-			String optionText = getResources().getString(R.string.editor_editing) + options.get(editOptionIndex);
-			options.remove(editOptionIndex);
-			options.add(editOptionIndex, optionText);
-			adapter.notifyDataSetChanged();
 			return true;
 		case R.id.menu_edit_context_delete:
-			// remove selected option
-			// must cast long to int to call the right overloaded method
-			options.remove((int)info.id);
+			for (int i = options.size(); i >= 0; i--) {
+				if (checkedItems.get(i)) {
+					list.setItemChecked(i, false);
+					options.remove(adapter.getItem(i));
+				}
+			}
 			adapter.notifyDataSetChanged();
 			unsavedChanges = true;
+			actionMode.finish();
 			return true;
 		default:
-			return super.onContextItemSelected(item);
+			return false;
 		}
+	}
+	
+	@Override
+	public void onDestroyActionMode(ActionMode mode) {
+		// uncheck all items
+		for (int i = 0; i < list.getCount(); i++) {
+			list.setItemChecked(i, false);
+		}
+		
+		actionMode = null;
+		
+		if (inEditMode)
+			disableEditMode();
 	}
 	
 	@Override
@@ -203,7 +299,7 @@ public class EditActivity extends SherlockFragmentActivity implements TextWatche
     	
     	// if we're editing, cancel edit
     	if (inEditMode) {
-    		cancelButton_OnClick(cancelButton);
+    		disableEditMode();
     		return;
     	}
     	
@@ -276,14 +372,19 @@ public class EditActivity extends SherlockFragmentActivity implements TextWatche
     		options.add(editOptionIndex, option);
     	} else {
     		options.add(option);
+    		
+    		// scroll to bottom
+    		list.post(new Runnable() {
+    			@Override
+    			public void run() {
+    				list.setSelection(list.getCount() - 1);
+    			}
+    		});
     	}
     	
     	adapter.notifyDataSetChanged();
     	unsavedChanges = true;
-    	
-    	cancelButton.setVisibility(View.GONE);
-    	optionText.setText("");
-    	inEditMode = false;
+		disableEditMode();
     }
     
     /**
@@ -291,15 +392,19 @@ public class EditActivity extends SherlockFragmentActivity implements TextWatche
      * @param v
      */
     public void cancelButton_OnClick(View v) {
+		disableEditMode();
+    }
+    
+    private void disableEditMode() {
+    	cancelButton.setVisibility(View.GONE);
     	optionText.setText("");
 		inEditMode = false;
 		
-		cancelButton.setVisibility(View.GONE);
+		list.setItemChecked(editOptionIndex, false);
+		editOptionIndex = -1;
 		
-		String originalOption = options.get(editOptionIndex).replace(getResources().getString(R.string.editor_editing), "");
-		options.remove(editOptionIndex);
-		options.add(editOptionIndex, originalOption);
-		adapter.notifyDataSetChanged();
+		if (actionMode != null)
+			actionMode.finish();
     }
     
     /**

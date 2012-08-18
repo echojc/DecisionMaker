@@ -12,7 +12,8 @@
 	    <ListView 
 	        android:id="@+id/editor_option_list"
 	        android:layout_width="fill_parent"
-	        android:layout_height="fill_parent" />
+	        android:layout_height="fill_parent"
+	        android:choiceMode="multipleChoice" />
 	    
     </FrameLayout>
     
@@ -32,7 +33,8 @@
 	        android:layout_marginTop="4dp"
 	        android:layout_marginBottom="4dp"
 	        android:maxLines="1"
-	        android:inputType="textShortMessage|textCapSentences"
+	        android:inputType="textCapSentences"
+	        android:imeOptions="actionGo"
 	        android:hint="@string/editor_new_option" />
 	    
 	    <ImageButton

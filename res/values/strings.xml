@@ -15,7 +15,7 @@
     <string name="editor_delete">Delete</string>
     <string name="editor_edit">Edit</string>
     <string name="editor_cancel">Cancel</string>
-    <string name="editor_editing">*[edit]\u0020</string>
+    <string name="editor_editing">Editing \"%s\"...</string>
     
     <string name="about_dialog_message">by Jonathan Chow\n\nSource is available on GitHub:\nhttps://github.com/echo-sh/DecisionMaker</string>
     <string name="delete_confirm_dialog_title">Delete</string>
