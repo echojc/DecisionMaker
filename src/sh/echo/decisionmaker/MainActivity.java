@@ -26,14 +26,12 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 
-public class MainActivity extends SherlockFragmentActivity {
+public class MainActivity extends SherlockFragmentActivity implements OnItemSelectedListener, ShakeGestureListener, DialogInterface.OnClickListener {
 
 	// constants
 	private static final char[] CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVXYZ0123456789!@#$%^&*()_+=[]\\{}|;':\",./<>?`~".toCharArray();
 	
 	// unsaved variables
-	private OnItemSelectedListener spinnerHandler;
-	private ShakeGestureListener accelHandler;
 	private Thread warpTextThread;
 	private Toast randomizeToast;
 	
@@ -87,7 +85,7 @@ public class MainActivity extends SherlockFragmentActivity {
 		updateProgramSpinner(null);
 		
 		// create listener for item select on spinner
-		programSpinner.setOnItemSelectedListener(getOnItemSelectedListener());
+		programSpinner.setOnItemSelectedListener(this);
 		
 		// select last selected spinner option (0 by default)
 		programSpinner.setSelection(currentSpinnerPosition);
@@ -119,19 +117,7 @@ public class MainActivity extends SherlockFragmentActivity {
 	    	startActivityForResult(intentEdit, 0);
 	    	return true;
 	    case R.id.menu_delete:
-	    	final String deleteItemName = getCurrentProgramName();
-	    	DeleteConfirmDialogFragment.newInstance(deleteItemName, new DialogInterface.OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					// if the user confirms delete, remove and update
-					if (which == DialogInterface.BUTTON_POSITIVE) {
-						ProgramManager.removeProgram(deleteItemName);
-						updateProgramSpinner(null);
-					}
-						
-					dialog.dismiss();
-				}
-	    	}).show(getSupportFragmentManager(), "delete");
+	    	DeleteConfirmDialogFragment.newInstance(getCurrentProgramName()).show(getSupportFragmentManager(), "delete");
 	    	return true;
         case R.id.menu_about:
         	AboutDialogFragment.newInstance().show(getSupportFragmentManager(), "about");
@@ -162,13 +148,13 @@ public class MainActivity extends SherlockFragmentActivity {
 	public void onResume() {
 		super.onResume();
 		ShakeGestureManager.enable();
-		ShakeGestureManager.addShakeGestureListener(getShakeGestureListener());
+		ShakeGestureManager.addShakeGestureListener(this);
 	}
 	
 	@Override
 	public void onPause() {
 		ShakeGestureManager.disable();
-		ShakeGestureManager.removeShakeGestureListener(getShakeGestureListener());
+		ShakeGestureManager.removeShakeGestureListener(this);
 		super.onPause();
 	}
 	
@@ -352,55 +338,6 @@ public class MainActivity extends SherlockFragmentActivity {
 	}
 	
 	/**
-	 * Gets the callback handler for the main spinner.
-	 * @return
-	 */
-	private OnItemSelectedListener getOnItemSelectedListener() {
-		if (spinnerHandler == null) {
-			spinnerHandler = new OnItemSelectedListener() {
-				
-				public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-					// save the current item to a class variable
-					currentSpinnerPosition = pos;
-					Log.i("OnItemSelectedListener", "selected item " + getCurrentProgramName());
-					
-					// reset text
-					setDisplayToDefault();
-					Log.i("listener", "1");
-					// set shaken flag
-					shakenNotStirred = true;
-				}
-
-				public void onNothingSelected(AdapterView<?> parent) {
-					// do nothing
-					Log.i("OnItemSelectedListener", "nothing selected");
-				}
-			};
-		}
-		return spinnerHandler;
-	}
-	
-	/**
-	 * Gets the callback handler for shake gestures.
-	 * @return
-	 */
-	private ShakeGestureListener getShakeGestureListener() {
-		if (accelHandler == null) {
-			accelHandler = new ShakeGestureListener() {
-
-				public void onShake() {
-					// display a new option
-					randomize();
-					
-					// keep screen on for a while
-					UserActivityManager.poke();
-				}
-			};
-		}
-		return accelHandler;
-	}
-	
-	/**
 	 * Gets the program name of the currently selected item.
 	 * @return A new String object containing the name, or null on error.
 	 */
@@ -421,5 +358,47 @@ public class MainActivity extends SherlockFragmentActivity {
 		// display it
 		if (shakenNotStirred)
 			warpText(currentOption, R.color.nice_shade_of_light_green);
+	}
+	
+	/* OnItemSelected interface */
+	@Override
+	public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+		// save the current item to a class variable
+		currentSpinnerPosition = pos;
+		Log.i("OnItemSelectedListener", "selected item " + getCurrentProgramName());
+		
+		// reset text
+		setDisplayToDefault();
+		Log.i("listener", "1");
+		// set shaken flag
+		shakenNotStirred = true;
+	}
+
+	@Override
+	public void onNothingSelected(AdapterView<?> parent) {
+		// do nothing
+		Log.i("OnItemSelectedListener", "nothing selected");
+	}
+	
+	/* ShakeGestureListener interface */
+	@Override
+	public void onShake() {
+		// display a new option
+		randomize();
+		
+		// keep screen on for a while
+		UserActivityManager.poke();
+	}
+	
+	/* DialogInterface.OnClickListener interface */
+	@Override
+	public void onClick(DialogInterface dialog, int which) {
+		// if the user confirms delete, remove and update
+		if (which == DialogInterface.BUTTON_POSITIVE) {
+			ProgramManager.removeProgram(getCurrentProgramName());
+			updateProgramSpinner(null);
+		}
+			
+		dialog.dismiss();
 	}
 }

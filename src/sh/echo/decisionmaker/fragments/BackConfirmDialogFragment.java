@@ -9,17 +9,12 @@ import android.support.v4.app.DialogFragment;
 
 public class BackConfirmDialogFragment extends DialogFragment {
 	
-	// for activity to know the result
-	private OnClickListener callback;
-	
 	/**
 	 * Creates an instance of AboutDialogFragment for use.
 	 * @return
 	 */
-	public static BackConfirmDialogFragment newInstance(OnClickListener callback) {
-		BackConfirmDialogFragment fragment = new BackConfirmDialogFragment();
-		fragment.callback = callback;
-		return fragment;
+	public static BackConfirmDialogFragment newInstance() {
+		return new BackConfirmDialogFragment();
 	}
 
 	@Override
@@ -28,8 +23,8 @@ public class BackConfirmDialogFragment extends DialogFragment {
 		return new AlertDialog.Builder(getActivity())
 			.setTitle(R.string.back_confirm_dialog_title)
 			.setMessage(R.string.back_confirm_dialog_message)
-			.setPositiveButton(R.string.yes, callback)
-			.setNegativeButton(R.string.no, callback)
+			.setPositiveButton(R.string.yes, (OnClickListener)getActivity())
+			.setNegativeButton(R.string.no, (OnClickListener)getActivity())
 			.create();
 	}
 }

@@ -10,26 +10,24 @@ import android.util.Log;
 
 public class DeleteConfirmDialogFragment extends DialogFragment {
 	
-	// for displaying which option is being deleted
-	private String itemName;
-	
-	// for when the user selects an option
-	private OnClickListener callback;
-
 	/**
 	 * Creates an instance of DeleteConfirmDialogFragment for use.
 	 * @return
 	 */
-	public static DeleteConfirmDialogFragment newInstance(String itemName, OnClickListener callback) {
+	public static DeleteConfirmDialogFragment newInstance(String itemName) {
 		DeleteConfirmDialogFragment fragment = new DeleteConfirmDialogFragment();
-		fragment.itemName = itemName;
-		fragment.callback = callback;
+		Bundle args = new Bundle();
+		args.putString("itemName", itemName);
+		fragment.setArguments(args);
 		return fragment;
 	}
 
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
-		// get saved arguments
+		// get arguments from bundle
+		String itemName = getArguments().getString("itemName");
+		
+		// validate arguments
 		if (itemName == null) {
 			Log.w("DeleteConfirmDialogFragment", "no program name supplied");
 			itemName = "";
@@ -42,8 +40,8 @@ public class DeleteConfirmDialogFragment extends DialogFragment {
 		return new AlertDialog.Builder(getActivity())
 			.setTitle(R.string.delete_confirm_dialog_title)
 			.setMessage(message)
-			.setPositiveButton(R.string.yes, callback)
-			.setNegativeButton(R.string.no, callback)
+			.setPositiveButton(R.string.yes, (OnClickListener)getActivity())
+			.setNegativeButton(R.string.no, (OnClickListener)getActivity())
 			.create();
 	}
 }

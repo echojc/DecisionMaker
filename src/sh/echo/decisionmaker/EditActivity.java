@@ -26,14 +26,13 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 
-public class EditActivity extends SherlockFragmentActivity {
+public class EditActivity extends SherlockFragmentActivity implements TextWatcher, DialogInterface.OnClickListener {
 	
 	// constants
 	public static final String INTENT_PROGRAM_NAME = "sh.echo.decisionmaker.program_name";
 	
 	// unsaved variables
 	private ArrayAdapter<String> adapter;
-	private TextWatcher textWatcher;
 	
 	// views
 	private ListView list;
@@ -179,12 +178,12 @@ public class EditActivity extends SherlockFragmentActivity {
 	@Override
 	public void onResume() {
 		super.onResume();
-		programNameText.addTextChangedListener(getTextWatcher());
+		programNameText.addTextChangedListener(this);
 	}
 	
 	@Override
 	public void onStop() {
-		programNameText.removeTextChangedListener(getTextWatcher());
+		programNameText.removeTextChangedListener(this);
 		super.onStop();
 	}
     
@@ -210,20 +209,7 @@ public class EditActivity extends SherlockFragmentActivity {
     	
     	// check for unsaved changes
     	if (unsavedChanges) {
-    		BackConfirmDialogFragment.newInstance(new DialogInterface.OnClickListener() {
-				public void onClick(DialogInterface dialog, int which) {
-					
-					// check for positive button
-					if (which == DialogInterface.BUTTON_POSITIVE) {
-						// try to save, and if it didn't succeed then stop
-						if (!save())
-							return;
-					}
-					
-					dialog.dismiss();
-					finishWithTransition();
-				}
-    		}).show(getSupportFragmentManager(), "back");
+    		BackConfirmDialogFragment.newInstance().show(getSupportFragmentManager(), "back");
     	} else {
     		finishWithTransition();
     	}
@@ -324,26 +310,30 @@ public class EditActivity extends SherlockFragmentActivity {
     	overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
     }
     
-    /**
-     * Gets a TextWatcher for handling text input on an EditText.
-     * @return
-     */
-    private TextWatcher getTextWatcher() {
-    	if (textWatcher == null) {
-    		textWatcher = new TextWatcher() {
-
-				@Override
-				public void onTextChanged(CharSequence s, int start, int before, int count) {
-					unsavedChanges = true;
-				}
-				
-				@Override
-				public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-				
-				@Override
-				public void afterTextChanged(Editable s) {}
-			};
-    	}
-    	return textWatcher;
-    }
+    /* TextWatcher interface */
+	@Override
+	public void onTextChanged(CharSequence s, int start, int before, int count) {
+		unsavedChanges = true;
+	}
+	
+	@Override
+	public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+	
+	@Override
+	public void afterTextChanged(Editable s) {}
+	
+	/* DialogListener.OnClickListener interface */
+	@Override
+	public void onClick(DialogInterface dialog, int which) {
+		
+		// check for positive button
+		if (which == DialogInterface.BUTTON_POSITIVE) {
+			// try to save, and if it didn't succeed then stop
+			if (!save())
+				return;
+		}
+		
+		dialog.dismiss();
+		finishWithTransition();
+	}
 }
