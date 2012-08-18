@@ -439,6 +439,8 @@ public class EditActivity extends SherlockFragmentActivity implements ActionMode
 		}
 		
 		dialog.dismiss();
-		finishWithTransition();
+		
+		if (which != DialogInterface.BUTTON_NEUTRAL)
+			finishWithTransition();
 	}
 }

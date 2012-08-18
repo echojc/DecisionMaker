@@ -26,6 +26,7 @@ public class BackConfirmDialogFragment extends SherlockDialogFragment {
 			.setMessage(R.string.back_confirm_dialog_message)
 			.setPositiveButton(R.string.yes, (OnClickListener)getActivity())
 			.setNegativeButton(R.string.no, (OnClickListener)getActivity())
+			.setNeutralButton(R.string.cancel, (OnClickListener)getActivity())
 			.create();
 	}
 }
