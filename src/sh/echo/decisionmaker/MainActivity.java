@@ -365,11 +365,11 @@ public class MainActivity extends SherlockFragmentActivity implements OnItemSele
 	public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
 		// save the current item to a class variable
 		currentSpinnerPosition = pos;
-		Log.i("OnItemSelectedListener", "selected item " + getCurrentProgramName());
+		//Log.i("OnItemSelectedListener", "selected item " + getCurrentProgramName());
 		
 		// reset text
 		setDisplayToDefault();
-		Log.i("listener", "1");
+		
 		// set shaken flag
 		shakenNotStirred = true;
 	}
@@ -377,7 +377,7 @@ public class MainActivity extends SherlockFragmentActivity implements OnItemSele
 	@Override
 	public void onNothingSelected(AdapterView<?> parent) {
 		// do nothing
-		Log.i("OnItemSelectedListener", "nothing selected");
+		//Log.i("OnItemSelectedListener", "nothing selected");
 	}
 	
 	/* ShakeGestureListener interface */

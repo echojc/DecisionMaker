@@ -37,7 +37,7 @@ public class ShakeGestureManager {
 		sensorManager.registerListener(getSensorEventListener(),
 				sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
 				SensorManager.SENSOR_DELAY_NORMAL);
-		Log.i("Accelerometer", "enabled accelerometer");
+		//Log.i("Accelerometer", "enabled accelerometer");
 	}
 
 	/**
@@ -48,7 +48,7 @@ public class ShakeGestureManager {
 			throw new IllegalStateException("SensorManager is null (did you forget to call initialize()?)");
 
 		sensorManager.unregisterListener(getSensorEventListener());
-		Log.i("Accelerometer", "disabled accelerometer");
+		//Log.i("Accelerometer", "disabled accelerometer");
 	}
 
 	private static SensorEventListener getSensorEventListener() {
