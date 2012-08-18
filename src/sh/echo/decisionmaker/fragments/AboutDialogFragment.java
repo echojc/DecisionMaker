@@ -1,18 +1,17 @@
 package sh.echo.decisionmaker.fragments;
 
-import com.actionbarsherlock.app.SherlockDialogFragment;
-
 import sh.echo.decisionmaker.R;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
 import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
 import android.widget.TextView;
+
+import com.actionbarsherlock.app.SherlockDialogFragment;
 
 public class AboutDialogFragment extends SherlockDialogFragment {
 	
