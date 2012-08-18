@@ -5,9 +5,10 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
 
-public class BackConfirmDialogFragment extends DialogFragment {
+import com.actionbarsherlock.app.SherlockDialogFragment;
+
+public class BackConfirmDialogFragment extends SherlockDialogFragment {
 	
 	/**
 	 * Creates an instance of AboutDialogFragment for use.

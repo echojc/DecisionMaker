@@ -5,10 +5,11 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
 import android.util.Log;
 
-public class DeleteConfirmDialogFragment extends DialogFragment {
+import com.actionbarsherlock.app.SherlockDialogFragment;
+
+public class DeleteConfirmDialogFragment extends SherlockDialogFragment {
 	
 	/**
 	 * Creates an instance of DeleteConfirmDialogFragment for use.

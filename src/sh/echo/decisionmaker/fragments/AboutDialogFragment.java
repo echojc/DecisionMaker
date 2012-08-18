@@ -1,5 +1,7 @@
 package sh.echo.decisionmaker.fragments;
 
+import com.actionbarsherlock.app.SherlockDialogFragment;
+
 import sh.echo.decisionmaker.R;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -12,7 +14,7 @@ import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
 import android.widget.TextView;
 
-public class AboutDialogFragment extends DialogFragment {
+public class AboutDialogFragment extends SherlockDialogFragment {
 	
 	/**
 	 * Creates an instance of AboutDialogFragment for use.
