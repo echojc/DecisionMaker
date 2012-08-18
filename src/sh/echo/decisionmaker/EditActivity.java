@@ -154,7 +154,7 @@ public class EditActivity extends SherlockFragmentActivity implements ActionMode
 			@Override
 			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
 				// treat "go" as triggering an add operation
-				if (actionId == EditorInfo.IME_ACTION_GO) {
+				if (event.getAction() == KeyEvent.ACTION_DOWN) {
 					omniButton_OnClick(omniButton);
 					return true;
 				}

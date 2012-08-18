@@ -34,7 +34,7 @@
 	        android:layout_marginBottom="4dp"
 	        android:maxLines="1"
 	        android:inputType="textCapSentences"
-	        android:imeOptions="actionGo"
+	        android:imeOptions="actionNone"
 	        android:hint="@string/editor_new_option" />
 	    
 	    <ImageButton
