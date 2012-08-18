@@ -24,7 +24,9 @@
             android:name=".EditActivity"
             android:label=""
             android:logo="@drawable/ic_action_note"
-            android:windowSoftInputMode="adjustResize" >
+            android:windowSoftInputMode="adjustResize"
+            android:screenOrientation="portrait"
+            android:configChanges="orientation|keyboardHidden" >
         </activity>
     </application>
 
