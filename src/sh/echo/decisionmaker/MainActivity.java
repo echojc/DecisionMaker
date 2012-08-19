@@ -68,8 +68,10 @@ public class MainActivity extends SherlockFragmentActivity implements OnItemSele
 		boolean firstRun = getPreferences(Context.MODE_PRIVATE).getBoolean("first_run", true);
 		if (firstRun) {
 			// add a default program if none exist
-			if (ProgramManager.getProgramCount() == 0)
+			if (ProgramManager.getProgramCount() == 0) {
 				ProgramManager.addProgram(getResources().getString(R.string.default_program_name), getResources().getStringArray(R.array.default_program_options));
+				ProgramManager.savePrograms(this);
+			}
 			
 			// show welcome toast
 			Toast.makeText(this, R.string.welcome_message, Toast.LENGTH_LONG).show();
