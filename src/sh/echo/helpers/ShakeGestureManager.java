@@ -14,10 +14,11 @@ public class ShakeGestureManager {
 
 	private static SensorManager sensorManager;
 	private static SensorEventListener sensorHandler;
+	private static float sensorMaxRange;
 	
 	private static List<ShakeGestureListener> listeners = new ArrayList<ShakeGestureListener>();
 	
-	private static final float SHAKE_THRESHOLD = 15.0f;
+	private static final float SHAKE_THRESHOLD = 0.6f;
 
 	/**
 	 * Initialises this helper. Call once in onCreate().
@@ -25,6 +26,7 @@ public class ShakeGestureManager {
 	 */
 	public static void initialize(Context context) {
 		sensorManager = (SensorManager)context.getSystemService(Context.SENSOR_SERVICE);
+		sensorMaxRange = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER).getMaximumRange();
 	}
 
 	/**
@@ -59,7 +61,7 @@ public class ShakeGestureManager {
 				public void onSensorChanged(SensorEvent event) {
 					float x = Math.abs(event.values[0]);
 					
-					if (x > SHAKE_THRESHOLD)
+					if (x > SHAKE_THRESHOLD * sensorMaxRange)
 						fireOnShake();
 				}
 
