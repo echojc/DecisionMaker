@@ -7,7 +7,6 @@ import sh.echo.helpers.SharedPreferencesHelper;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.util.Log;
 
 public class ProgramManager {
 
@@ -98,7 +97,7 @@ public class ProgramManager {
 		if (existingOptions == null) {
 			programs.put(programName, options);
 		} else {
-			Log.i("ProgramManager", "appending " + options.length + " options to " + programName);
+			//Log.i("ProgramManager", "appending " + options.length + " options to " + programName);
 			// append new options
 			String[] combinedOptions = new String[existingOptions.length + options.length];
 			System.arraycopy(existingOptions, 0, combinedOptions, 0, existingOptions.length);
@@ -115,7 +114,7 @@ public class ProgramManager {
 	public static void removeProgram(String programName) {
 		// check if this program exists
 		if (!programs.containsKey(programName)) {
-			Log.w("ProgramManager", "tried to remove non-existent program");
+			//Log.w("ProgramManager", "tried to remove non-existent program");
 			return;
 		}
 		

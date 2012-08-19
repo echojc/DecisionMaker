@@ -9,12 +9,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -225,7 +223,7 @@ public class EditActivity extends SherlockFragmentActivity implements ActionMode
 			}
 			
 			if (editOptionIndex == -1) {
-				Log.w("Editor", "trying to edit but nothing selected");
+				//Log.w("Editor", "trying to edit but nothing selected");
 				return false;
 			}
 			

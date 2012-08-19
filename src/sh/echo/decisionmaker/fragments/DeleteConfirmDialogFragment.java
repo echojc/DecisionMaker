@@ -5,7 +5,6 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
-import android.util.Log;
 
 import com.actionbarsherlock.app.SherlockDialogFragment;
 
@@ -30,7 +29,7 @@ public class DeleteConfirmDialogFragment extends SherlockDialogFragment {
 		
 		// validate arguments
 		if (itemName == null) {
-			Log.w("DeleteConfirmDialogFragment", "no program name supplied");
+			//Log.w("DeleteConfirmDialogFragment", "no program name supplied");
 			itemName = "";
 		}
 		

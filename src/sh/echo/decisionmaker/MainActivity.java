@@ -12,7 +12,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
@@ -55,7 +54,7 @@ public class MainActivity extends SherlockFragmentActivity implements OnItemSele
 		
 		// restore state variables
 		if (savedInstanceState != null) {
-			Log.i("OnCreate", "restoring state");
+			//Log.i("OnCreate", "restoring state");
 			currentSpinnerPosition = savedInstanceState.getInt("currentSpinnerPosition");
 			currentOption = savedInstanceState.getString("currentOption");
 			outputDisplay.setText(currentOption);
@@ -308,7 +307,7 @@ public class MainActivity extends SherlockFragmentActivity implements OnItemSele
 		} else {
 			// display toast
 			randomizeToast.show();
-			Log.w("randomize()", "no options in " + currentProgramName);
+			//Log.w("randomize()", "no options in " + currentProgramName);
 		}
 	}
 	
