@@ -59,6 +59,8 @@ public class MainActivity extends SherlockFragmentActivity implements OnItemSele
 			currentOption = savedInstanceState.getString("currentOption");
 			outputDisplay.setText(currentOption);
 			outputDisplay.setBackgroundColor(0x00ffffff);
+		} else {
+			currentOption = getResources().getString(R.string.option_display_default);
 		}
 
 		// load existing programs
@@ -353,12 +355,14 @@ public class MainActivity extends SherlockFragmentActivity implements OnItemSele
 	 * Sets the display back to the default message.
 	 */
 	private void setDisplayToDefault() {
-		// get the default string
-		currentOption = getResources().getString(R.string.option_display_default);
+		// prevent changing on orientation change
+		if (shakenNotStirred) {
+			// get the default string
+			currentOption = getResources().getString(R.string.option_display_default);
 		
-		// display it
-		if (shakenNotStirred)
+			// display it
 			warpText(currentOption, R.color.nice_shade_of_light_green);
+		}
 	}
 	
 	// callback for tapping the screen
