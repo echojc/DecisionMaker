@@ -31,7 +31,9 @@
 	        android:gravity="center"
 	        android:padding="20dp"
 	        android:text="@string/option_display_default"
-	        android:textSize="32dp" />
+	        android:textSize="32dp"
+	        android:clickable="true"
+	        android:onClick="optionDisplay_OnClick" />
 	    
     </RelativeLayout>
 

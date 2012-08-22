@@ -5,7 +5,7 @@
     <string name="title_activity_edit">Editor</string>
     
     <string name="select_program">Select your options:</string>
-    <string name="option_display_default">Shake!</string>
+    <string name="option_display_default">Tap!</string>
     <string name="no_options_message">No options to display!</string>
     
     <string name="editor_name">Name</string>
@@ -26,7 +26,7 @@
     <string name="back_confirm_dialog_title">Save</string>
     <string name="back_confirm_dialog_message">Do you want to save your changes?</string>
     
-    <string name="welcome_message">Welcome! Simply shake to get started!</string>
+    <string name="welcome_message">Welcome! Simply tap to get started!</string>
     <string name="default_program_name">Yes or No</string>
     
     <string name="editor_warn_empty_option">You can\'t have an empty option!</string>

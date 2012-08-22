@@ -92,7 +92,7 @@ public class MainActivity extends SherlockFragmentActivity implements OnItemSele
 		programSpinner.setSelection(currentSpinnerPosition);
 		
 		// initialise shake handling
-		ShakeGestureManager.initialize(this);
+		//ShakeGestureManager.initialize(this);
 		
 		// initialise user activity manager for manually delaying screen from dimming
 		UserActivityManager.initialize(this);
@@ -148,14 +148,14 @@ public class MainActivity extends SherlockFragmentActivity implements OnItemSele
 	@Override
 	public void onResume() {
 		super.onResume();
-		ShakeGestureManager.enable();
-		ShakeGestureManager.addShakeGestureListener(this);
+		//ShakeGestureManager.enable();
+		//ShakeGestureManager.addShakeGestureListener(this);
 	}
 	
 	@Override
 	public void onPause() {
-		ShakeGestureManager.disable();
-		ShakeGestureManager.removeShakeGestureListener(this);
+		//ShakeGestureManager.disable();
+		//ShakeGestureManager.removeShakeGestureListener(this);
 		super.onPause();
 	}
 	
@@ -359,6 +359,11 @@ public class MainActivity extends SherlockFragmentActivity implements OnItemSele
 		// display it
 		if (shakenNotStirred)
 			warpText(currentOption, R.color.nice_shade_of_light_green);
+	}
+	
+	// callback for tapping the screen
+	public void optionDisplay_OnClick(View v) {
+		randomize();
 	}
 	
 	/* OnItemSelected interface */
