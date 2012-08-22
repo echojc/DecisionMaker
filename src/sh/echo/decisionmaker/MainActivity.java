@@ -4,13 +4,13 @@ import java.util.Arrays;
 
 import sh.echo.decisionmaker.fragments.AboutDialogFragment;
 import sh.echo.decisionmaker.fragments.DeleteConfirmDialogFragment;
-import sh.echo.helpers.ShakeGestureManager;
 import sh.echo.helpers.ShakeGestureManager.ShakeGestureListener;
 import sh.echo.helpers.UserActivityManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences.Editor;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -29,6 +29,7 @@ public class MainActivity extends SherlockFragmentActivity implements OnItemSele
 
 	// constants
 	private static final char[] CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVXYZ0123456789!@#$%^&*()_+=[]\\{}|;':\",./<>?`~".toCharArray();
+	private static final String PREF_FIRST_RUN = "first_run_";
 	
 	// unsaved variables
 	private Thread warpTextThread;
@@ -47,7 +48,7 @@ public class MainActivity extends SherlockFragmentActivity implements OnItemSele
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		
+
 		// set views
 		programSpinner = (Spinner)findViewById(R.id.current_program);
 		outputDisplay = (TextView)findViewById(R.id.option_display);
@@ -67,7 +68,11 @@ public class MainActivity extends SherlockFragmentActivity implements OnItemSele
 		ProgramManager.loadPrograms(this);
 
 		// first run stuff
-		boolean firstRun = getPreferences(Context.MODE_PRIVATE).getBoolean("first_run", true);
+		String prefFirstRun = PREF_FIRST_RUN;
+		try {
+			prefFirstRun += getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
+		} catch (NameNotFoundException e) {}
+		boolean firstRun = getPreferences(Context.MODE_PRIVATE).getBoolean(prefFirstRun, true);
 		if (firstRun) {
 			// add a default program if none exist
 			if (ProgramManager.getProgramCount() == 0) {
@@ -80,7 +85,7 @@ public class MainActivity extends SherlockFragmentActivity implements OnItemSele
 			
 			// write to preferences to prevent re-run in the future
 			Editor editor = getPreferences(Context.MODE_PRIVATE).edit();
-			editor.putBoolean("first_run", false);
+			editor.putBoolean(prefFirstRun, false);
 			editor.commit();
 		}
 
