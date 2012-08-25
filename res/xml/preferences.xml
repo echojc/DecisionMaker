@@ -1,0 +1,21 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" >
+
+    <PreferenceCategory
+        android:title="@string/pref_cat_shake" >
+        
+        <CheckBoxPreference
+            android:key="pref_shake_enable"
+            android:title="@string/pref_shake_enable"
+            android:summary="@string/pref_shake_enable_summary"
+            android:defaultValue="false" />
+        
+        <Preference
+            android:key="pref_shake_sensitivity"
+            android:title="@string/pref_shake_sensitivity"
+            android:summary="@string/pref_shake_sensitivity_summary"
+             />
+        
+    </PreferenceCategory>
+
+</PreferenceScreen>

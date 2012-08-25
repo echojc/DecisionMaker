@@ -127,6 +127,10 @@ public class MainActivity extends SherlockFragmentActivity implements OnItemSele
 	    case R.id.menu_delete:
 	    	DeleteConfirmDialogFragment.newInstance(getCurrentProgramName()).show(getSupportFragmentManager(), "delete");
 	    	return true;
+	    case R.id.menu_settings:
+	    	Intent intentSettings = new Intent(this, SettingsActivity.class);
+	    	startActivity(intentSettings);
+	    	return true;
         case R.id.menu_about:
         	AboutDialogFragment.newInstance().show(getSupportFragmentManager(), "about");
             return true;
